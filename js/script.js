@@ -165,22 +165,13 @@ function isDateKey(value) {
 const today = dateKey(new Date());
 const notesState = loadValue(
   "notes",
-  [
-    { text: "Finalizar relatório", done: false },
-    { text: "Estudar JavaScript", done: false },
-    { text: "Organizar arquivos", done: false },
-    { text: "Responder cliente", done: false },
-  ],
+  [],
   isNoteList,
   ["metro-start-notes"],
 );
 const agendaState = loadValue(
   "agenda",
-  [
-    { time: "09:00", title: "Reunião do projeto" },
-    { time: "14:00", title: "Desenvolvimento" },
-    { time: "17:00", title: "Planejamento" },
-  ],
+  [],
   isAgendaList,
   ["metro-start-agenda"],
 );
@@ -673,8 +664,15 @@ function renderNotes() {
     checkbox.checked = note.done;
     checkbox.setAttribute("aria-label", `Concluir ${note.text}`);
     checkbox.onchange = () => {
-      notes[index].done = checkbox.checked;
-      persist("notes", notes, isNoteList);
+      const updatedNotes = notes.map((item, itemIndex) =>
+        itemIndex === index ? { ...item, done: checkbox.checked } : item,
+      );
+      if (persist("notes", updatedNotes, isNoteList)) {
+        notes = updatedNotes;
+        renderNotes();
+      } else {
+        checkbox.checked = notes[index].done;
+      }
     };
     row.append(checkbox, element("span", "note-text", note.text));
     actions.append(
@@ -695,15 +693,21 @@ function editNote(index) {
     notify("A nota não pode ficar vazia.");
     return;
   }
-  notes[index].text = text.trim();
-  persist("notes", notes, isNoteList);
-  renderNotes();
+  const updatedNotes = notes.map((note, itemIndex) =>
+    itemIndex === index ? { ...note, text: text.trim() } : note,
+  );
+  if (persist("notes", updatedNotes, isNoteList)) {
+    notes = updatedNotes;
+    renderNotes();
+  }
 }
 function deleteNote(index) {
   if (!confirm(`Excluir a nota “${notes[index].text}”?`)) return;
-  notes.splice(index, 1);
-  persist("notes", notes, isNoteList);
-  renderNotes();
+  const updatedNotes = notes.filter((_note, itemIndex) => itemIndex !== index);
+  if (persist("notes", updatedNotes, isNoteList)) {
+    notes = updatedNotes;
+    renderNotes();
+  }
 }
 function editEvent(index) {
   const date = prompt("Data (AAAA-MM-DD):", agenda[index].date);
@@ -724,15 +728,21 @@ function editEvent(index) {
     notify("A descrição do evento não pode ficar vazia.");
     return;
   }
-  agenda[index] = { date, time, title: title.trim() };
-  persist("agenda", agenda, isAgendaList);
+  const updatedAgenda = agenda.map((event, eventIndex) =>
+    eventIndex === index ? { date, time, title: title.trim() } : event,
+  );
+  if (!persist("agenda", updatedAgenda, isAgendaList)) return;
+  agenda = updatedAgenda;
   renderAgenda();
   refreshCalendar();
 }
 function deleteEvent(index) {
   if (!confirm(`Excluir o evento “${agenda[index].title}”?`)) return;
-  agenda.splice(index, 1);
-  persist("agenda", agenda, isAgendaList);
+  const updatedAgenda = agenda.filter(
+    (_event, eventIndex) => eventIndex !== index,
+  );
+  if (!persist("agenda", updatedAgenda, isAgendaList)) return;
+  agenda = updatedAgenda;
   renderAgenda();
   refreshCalendar();
 }
@@ -875,9 +885,11 @@ function initialize() {
       notify("A nota não pode ficar vazia.");
       return;
     }
-    notes.push({ text: value.trim(), done: false });
-    persist("notes", notes, isNoteList);
-    renderNotes();
+    const updatedNotes = [...notes, { text: value.trim(), done: false }];
+    if (persist("notes", updatedNotes, isNoteList)) {
+      notes = updatedNotes;
+      renderNotes();
+    }
   };
   $("addEvent").onclick = () => {
     const date = prompt("Data (AAAA-MM-DD):", selectedCalendarDate);
@@ -898,9 +910,10 @@ function initialize() {
       notify("A descrição do evento não pode ficar vazia.");
       return;
     }
-    agenda.push({ date, time, title: title.trim() });
+    const updatedAgenda = [...agenda, { date, time, title: title.trim() }];
+    if (!persist("agenda", updatedAgenda, isAgendaList)) return;
+    agenda = updatedAgenda;
     selectedCalendarDate = date;
-    persist("agenda", agenda, isAgendaList);
     renderAgenda();
     refreshCalendar();
   };

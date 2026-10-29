@@ -2,7 +2,7 @@
 
 **Objetivo:** levar a base atual do dashboard até uma versão 0.1 estável e, depois, avançar para widgets configuráveis e integração Linux.
 
-**Status:** Fases 1 a 4 implementadas; validação das fases 1 a 3 em navegadores e dispositivos reais e validação da integração em desktop Linux continuam pendentes.
+**Status:** Implementação das Fases 1 a 4 concluída; validação manual da PWA e da interface continua pendente em navegadores/dispositivos reais. A integração Linux também precisa de validação em um desktop Linux.
 
 ## Base já existente
 
@@ -24,10 +24,11 @@
 ### PWA e funcionamento offline
 
 - [x] Remover a dependência Tailwind não utilizada e disponibilizar Lucide localmente.
-- [ ] Testar instalação e abertura em janela independente.
-- [ ] Testar primeira carga, cache, navegação offline e retorno à conexão.
 - [x] Definir como o service worker informa e aplica atualizações.
-- [ ] Testar o fluxo de atualização em navegador.
+- [x] Automatizar a validação do manifesto, ícones, shell pré-cacheado e fallback offline.
+- [x] Automatizar o fluxo de confirmação de atualização e erros de verificação.
+- [ ] Validar instalação e abertura em janela independente nos navegadores suportados.
+- [ ] Testar primeira carga, cache, navegação offline, reconexão e atualização em navegador.
 - [ ] Validar manifesto e ícones em Linux, Windows, Android e navegadores suportados.
 
 ### Dados e fluxos básicos
@@ -36,16 +37,20 @@
 - [x] Preservar e migrar os dados das chaves `metro-start-notes` e `metro-start-agenda` sem removê-las.
 - [x] Adicionar edição e remoção de notas e eventos.
 - [x] Tratar erros de leitura e gravação do armazenamento.
-- [ ] Testar persistência após recarga e funcionamento offline.
+- [x] Automatizar persistência, migração, dados inválidos e erros de armazenamento.
+- [ ] Confirmar persistência após recarga e edição offline em navegador instalado.
 
 ### Interface e validação
 
-- [ ] Validar pesquisa, atalhos de teclado, dock e navegação em navegador.
-- [ ] Verificar layout em telas pequenas, médias e desktop.
+- [x] Automatizar a presença de controles, IDs únicos e breakpoints responsivos.
+- [ ] Validar pesquisa, atalhos de teclado, dock e navegação por teclado/mouse em navegador.
+- [ ] Verificar visualmente layouts em telas pequenas, médias e desktop.
 - [x] Implementar estados vazios, mensagens de erro e controles acessíveis.
 - [x] Corrigir diferenças documentais entre o comportamento previsto e o comportamento implementado.
 
 **Marco de saída:** dashboard instalável com recursos locais essenciais funcionando offline, dados preservados e comportamento documentado com precisão.
+
+**Cobertura automatizada:** `node --test test/*.test.js agent/server.test.js`. Os testes unitários não substituem a validação visual e de instalação nos navegadores/dispositivos alvo.
 
 ## Fase 2: completar os widgets essenciais
 

@@ -44,7 +44,11 @@ export async function registerServiceWorker(setStatus) {
     navigator.serviceWorker.addEventListener("controllerchange", () => {
       if (reloadAfterUpdate) window.location.reload();
     });
-    registration.update().catch(() => {});
+    registration
+      .update()
+      .catch(() =>
+        setStatus("Não foi possível verificar atualizações do Orbe agora."),
+      );
   } catch {
     setStatus("Não foi possível preparar o cache offline neste navegador.");
   }

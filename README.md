@@ -51,6 +51,19 @@ Criar um dashboard pessoal que permita ao usuário organizar e acessar seus recu
 
 **Observação:** os recursos funcionais essenciais não dependem de CDN. Os fundos fotográficos são decorativos e ainda usam URLs externas; os gradientes permanecem como fallback offline.
 
+### Testes automatizados
+
+Os testes nativos do Node cobrem persistência/migração, manifesto e recursos
+offline, fallback do Service Worker, fluxo de atualização e integração do
+agente Linux:
+
+```sh
+node --test test/*.test.js agent/server.test.js
+```
+
+Eles não substituem a validação de instalação, layout e interação em navegadores
+reais. A lista de verificações manuais pendentes está no [roadmap](./roadmap.md).
+
 ## 3. Identidade visual
 
 O Orbe utiliza uma identidade própria, abandonando o estilo Windows Phone do antigo Metro Start.
@@ -201,6 +214,7 @@ O Orbe é desenvolvido como um PWA instalável; a validação de instalação po
 - [x] Implementar funcionamento offline básico.
 - [x] Detectar disponibilidade de conexão.
 - [x] Criar atualização com confirmação do usuário.
+- [x] Automatizar a validação do manifesto, ícones e recursos essenciais no cache.
 - [ ] Testar instalação no Linux.
 - [ ] Testar instalação no Windows.
 - [ ] Testar instalação no Android.
@@ -541,12 +555,17 @@ A proposta atual é criar um ambiente digital pessoal, personalizável e multipl
 - Agenda e notas com criação, edição, remoção e persistência local.
 - Migração das chaves antigas `metro-start-*` sem apagar os dados de origem.
 - Manifesto, ícones, cache offline e atualização confirmada do Service Worker.
-- Indicador de conexão e aviso explícito para valores demonstrativos de clima e sistema.
-- Agente Linux local com endpoint de diagnóstico; ações de sistema ainda não disponíveis.
+- Indicador de conexão e previsão do tempo obtida via Open-Meteo.
+- Informações do sistema limitadas ao navegador, ou métricas agregadas via agente Linux opcional.
+- Agente Linux local autorizado por token, com descoberta e abertura de aplicativos instalados por identificador.
 
 ### Próxima tarefa
 
-**Validar a Fase 1** em navegadores e dispositivos Linux, Windows e Android, incluindo instalação, funcionamento offline e atualização do Service Worker.
+**Concluir a validação manual da Fase 1** em navegadores e dispositivos Linux,
+Windows e Android, incluindo instalação, funcionamento offline, layout,
+interações e atualização do Service Worker. A implementação e os testes
+automatizados estão concluídos; a validação visual em navegador real continua
+pendente.
 
 ---
 
