@@ -32,10 +32,17 @@
             placeholder="Pesquisar aplicativos, arquivos, configurações..."
           /><kbd>Ctrl + K</kbd></label
         >
-        <div class="profile glass">
-          <i data-lucide="bell"></i><span class="avatar">DM</span
-          ><span>Meu perfil</span>
-        </div>
+        <button
+          class="profile glass"
+          id="profileButton"
+          type="button"
+          aria-haspopup="dialog"
+          aria-controls="profileDialog"
+        >
+          <span class="avatar" aria-hidden="true">DM</span>
+          <span class="profile-name">Meu perfil</span>
+          <i data-lucide="chevron-down" aria-hidden="true"></i>
+        </button>
       </header>
       <div class="layout">
         <aside class="sidebar glass">
@@ -355,5 +362,38 @@
         </div>
       </footer>
     </div>
+    <dialog id="profileDialog" class="profile-dialog" aria-labelledby="profileDialogTitle">
+      <div class="profile-dialog-header">
+        <div>
+          <p class="profile-dialog-eyebrow">Orbe</p>
+          <h2 id="profileDialogTitle">Meu perfil</h2>
+        </div>
+        <button
+          id="closeProfileDialog"
+          class="icon-button"
+          type="button"
+          aria-label="Fechar perfil"
+        >
+          <i data-lucide="x"></i>
+        </button>
+      </div>
+      <div class="profile-summary">
+        <span class="avatar" aria-hidden="true">DM</span>
+        <div>
+          <strong>Meu dashboard</strong>
+          <p>Acesse seu espaço e ajuste a experiência do Orbe.</p>
+        </div>
+      </div>
+      <div class="profile-dialog-actions">
+        <button id="openDashboard" type="button">
+          <i data-lucide="house" aria-hidden="true"></i>
+          Ir para o dashboard
+        </button>
+        <button id="openDashboardCustomization" type="button">
+          <i data-lucide="sliders-horizontal" aria-hidden="true"></i>
+          Personalizar dashboard
+        </button>
+      </div>
+    </dialog>
   </body>
 </html>

@@ -78,10 +78,17 @@ test("dashboard exposes named controls and responsive breakpoints", async () => 
     "nav",
     "notes",
     "agenda",
+    "profileButton",
+    "profileDialog",
+    "closeProfileDialog",
+    "openDashboard",
+    "openDashboardCustomization",
   ]) {
     assert.ok(ids.includes(id), `missing interactive element #${id}`);
   }
   assert.match(html, /Gerenciar dock e ícones/);
+  assert.match(html, /aria-haspopup="dialog"/);
+  assert.match(html, /Personalizar dashboard/);
   for (const breakpoint of [700, 1050, 1350]) {
     assert.ok(css.includes(`(max-width: ${breakpoint}px)`));
   }

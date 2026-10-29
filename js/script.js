@@ -1051,6 +1051,25 @@ function initialize() {
     $("search").value = "";
     renderApps();
   };
+  const profileDialog = $("profileDialog");
+  $("profileButton").addEventListener("click", () => profileDialog.showModal());
+  $("closeProfileDialog").addEventListener("click", () =>
+    profileDialog.close(),
+  );
+  profileDialog.addEventListener("click", (event) => {
+    if (event.target === profileDialog) profileDialog.close();
+  });
+  $("openDashboard").addEventListener("click", () => {
+    profileDialog.close();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+  $("openDashboardCustomization").addEventListener("click", () => {
+    profileDialog.close();
+    $("widgetSettings").scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  });
   let playing = false;
   $("play").onclick = () => {
     playing = !playing;

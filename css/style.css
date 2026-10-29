@@ -117,11 +117,107 @@ header {
   justify-content: center;
   gap: 15px;
   padding: 10px;
+  border-color: var(--border);
+  color: inherit;
+  cursor: pointer;
+  text-align: left;
+}
+.profile:hover,
+.profile:focus-visible {
+  background-color: #ffffff18;
+}
+.profile:focus-visible {
+  outline: 2px solid #8bd8ff;
+  outline-offset: 3px;
 }
 .avatar {
   background: var(--accent-strong);
   border-radius: 50%;
   padding: 9px;
+  display: inline-grid;
+  width: 40px;
+  height: 40px;
+  place-items: center;
+  flex: 0 0 auto;
+  font-size: 13px;
+  font-weight: 600;
+}
+.profile-dialog {
+  width: min(440px, calc(100vw - 32px));
+  max-width: none;
+  padding: 22px;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: var(--glass);
+  color: #fff;
+  box-shadow: 0 24px 80px #0009;
+  backdrop-filter: blur(23px);
+}
+.profile-dialog::backdrop {
+  background: #020913b8;
+  backdrop-filter: blur(4px);
+}
+.profile-dialog-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+.profile-dialog-header h2 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 500;
+}
+.profile-dialog-eyebrow {
+  margin: 0 0 5px;
+  color: #aebdcb;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.profile-summary {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 22px 0;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: #ffffff0a;
+}
+.profile-summary strong {
+  font-size: 14px;
+}
+.profile-summary p {
+  margin: 5px 0 0;
+  color: #c1cedb;
+  font-size: 12px;
+  line-height: 1.5;
+}
+.profile-dialog-actions {
+  display: grid;
+  gap: 9px;
+}
+.profile-dialog-actions button {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 11px;
+  min-height: 46px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: #ffffff10;
+  text-align: left;
+}
+.profile-dialog-actions button:hover,
+.profile-dialog-actions button:focus-visible {
+  background: #ffffff25;
+}
+.profile-dialog-actions button:focus-visible,
+.profile-dialog .icon-button:focus-visible {
+  outline: 2px solid #8bd8ff;
+  outline-offset: 2px;
 }
 .layout {
   display: grid;
@@ -605,8 +701,12 @@ h2 {
     font-size: 13px;
   }
   .search kbd,
-  .profile > span:last-child {
+  .profile-name {
     display: none;
+  }
+  .profile {
+    gap: 8px;
+    padding: 6px;
   }
   .layout {
     display: block;
