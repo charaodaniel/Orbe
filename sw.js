@@ -1,4 +1,4 @@
-const CACHE_NAME = "orbe-v7";
+const CACHE_NAME = "orbe-v8";
 const APP_FILES = [
   "./",
   "./index.html",
@@ -6,6 +6,7 @@ const APP_FILES = [
   "./css/style.css",
   "./js/script.js",
   "./js/storage.js",
+  "./js/dashboard-config.js",
   "./js/pwa.js",
   "./js/widgets.js",
   "./js/calendar.js",

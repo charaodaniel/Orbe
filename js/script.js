@@ -3,23 +3,60 @@ import { WidgetManager, clockWidget, systemWidget } from "./widgets.js";
 import { checkLinuxAgent, initializeLinuxAgent } from "./linux.js";
 import { registerServiceWorker } from "./pwa.js";
 import { loadValue, saveValue } from "./storage.js";
+import {
+  isDashboardConfig,
+  migrateDashboardConfig,
+} from "./dashboard-config.js";
 import { calendarWidget } from "./calendar.js";
 import { weatherWidget } from "./weather.js";
 
 // 01. Dados e configurações
 const apps = [
-  ["Navegador", "globe", "blue", "https://www.google.com"],
-  ["Editor de Código", "code-2", "blue", "https://vscode.dev"],
-  ["Gerenciador de Arquivos", "folder", "yellow", ""],
-  ["Terminal", "terminal", "dark", ""],
-  ["WhatsApp", "message-circle", "green", "https://web.whatsapp.com"],
-  ["Discord", "gamepad-2", "purple", "https://discord.com/app"],
-  ["YouTube", "youtube", "red", "https://youtube.com"],
-  ["Música", "music", "pink", "https://music.youtube.com"],
-  ["Fotos", "images", "cyan", ""],
-  ["Calculadora", "calculator", "dark", ""],
-  ["Notas", "notebook-pen", "yellow", ""],
-  ["Configurações", "settings", "dark", ""],
+  ["Navegador", "globe", "blue", "https://www.google.com", "browser"],
+  ["Editor de Código", "code-2", "blue", "https://vscode.dev", "code-editor"],
+  ["Gerenciador de Arquivos", "folder", "yellow", "", "file-manager"],
+  ["Terminal", "terminal", "dark", "", "terminal"],
+  ["WhatsApp", "message-circle", "green", "https://web.whatsapp.com", "whatsapp"],
+  ["Discord", "gamepad-2", "purple", "https://discord.com/app", "discord"],
+  ["YouTube", "youtube", "red", "https://youtube.com", "youtube"],
+  ["Música", "music", "pink", "https://music.youtube.com", "music"],
+  ["Fotos", "images", "cyan", "", "photos"],
+  ["Calculadora", "calculator", "dark", "", "calculator"],
+  ["Notas", "notebook-pen", "yellow", "", "notes"],
+  ["Configurações", "settings", "dark", "", "settings"],
+];
+const appIds = apps.map((app) => app[4]);
+const defaultDockAppIds = [
+  "browser",
+  "code-editor",
+  "file-manager",
+  "terminal",
+  "whatsapp",
+  "discord",
+  "youtube",
+  "music",
+];
+const dockIconOptions = [
+  ["globe", "Globo"],
+  ["code-2", "Código"],
+  ["folder", "Pasta"],
+  ["terminal", "Terminal"],
+  ["message-circle", "Mensagem"],
+  ["gamepad-2", "Controle"],
+  ["youtube", "Vídeo"],
+  ["music", "Música"],
+  ["images", "Fotos"],
+  ["calculator", "Calculadora"],
+  ["notebook-pen", "Notas"],
+  ["settings", "Configurações"],
+  ["star", "Estrela"],
+  ["heart", "Coração"],
+  ["mail", "E-mail"],
+  ["calendar-days", "Calendário"],
+  ["camera", "Câmera"],
+  ["image", "Imagem"],
+  ["download", "Download"],
+  ["file-text", "Documento"],
 ];
 const quick = [
   ["Projetos", "folder", "yellow"],
@@ -103,6 +140,7 @@ const widgetDefinitions = [
 const widgetIds = widgetDefinitions.map(({ id }) => id);
 const dashboardThemes = ["ocean", "violet", "forest"];
 const dashboardWallpapers = ["landscape", "aurora", "sunset", "ocean"];
+const dockIconNames = dockIconOptions.map(([name]) => name);
 const $ = (id) => document.getElementById(id);
 const icons = () => window.lucide?.createIcons();
 let notificationTimer;
@@ -198,7 +236,7 @@ const preferencesState = loadValue(
   isPreferences,
 );
 const defaultDashboardConfig = {
-  schemaVersion: 1,
+  schemaVersion: 2,
   order: [...widgetIds],
   widgets: Object.fromEntries(
     widgetDefinitions.map(({ id, defaultSize }) => [
@@ -209,54 +247,38 @@ const defaultDashboardConfig = {
   theme: "ocean",
   wallpaper: "landscape",
   preferences: { ...defaultPreferences },
+  dock: {
+    order: [...appIds],
+    apps: Object.fromEntries(
+      apps.map((app) => [
+        app[4],
+        {
+          visible: defaultDockAppIds.includes(app[4]),
+          icon: app[1],
+        },
+      ]),
+    ),
+  },
 };
-const isRecord = (value) =>
-  value !== null && typeof value === "object" && !Array.isArray(value);
-const hasExactKeys = (value, keys) =>
-  isRecord(value) &&
-  Object.keys(value).length === keys.length &&
-  keys.every((key) => Object.hasOwn(value, key));
-function isDashboardConfig(value) {
-  if (
-    !hasExactKeys(value, [
-      "schemaVersion",
-      "order",
-      "widgets",
-      "theme",
-      "wallpaper",
-      "preferences",
-    ]) ||
-    value.schemaVersion !== 1 ||
-    !Array.isArray(value.order) ||
-    value.order.length !== widgetIds.length ||
-    new Set(value.order).size !== widgetIds.length ||
-    !widgetIds.every((id) => value.order.includes(id)) ||
-    !hasExactKeys(value.widgets, widgetIds) ||
-    !dashboardThemes.includes(value.theme) ||
-    !dashboardWallpapers.includes(value.wallpaper) ||
-    !isPreferences(value.preferences)
-  ) {
-    return false;
-  }
-
-  return widgetDefinitions.every(({ id }) => {
-    const widget = value.widgets[id];
-    return (
-      hasExactKeys(widget, ["included", "visible", "size"]) &&
-      typeof widget.included === "boolean" &&
-      typeof widget.visible === "boolean" &&
-      ["small", "medium", "large"].includes(widget.size) &&
-      (widget.included || !widget.visible)
-    );
-  });
-}
+const dashboardConfigOptions = {
+  widgetIds,
+  widgetDefinitions,
+  dashboardThemes,
+  dashboardWallpapers,
+  appIds,
+  dockIconNames,
+};
+const isValidDashboardConfig = (value) =>
+  isDashboardConfig(value, dashboardConfigOptions);
 const dashboardState = loadValue(
   "dashboard-config",
   defaultDashboardConfig,
-  isDashboardConfig,
+  isValidDashboardConfig,
 );
+const dashboardNeedsMigration =
+  dashboardState.found && dashboardState.value.schemaVersion === 1;
 let dashboardConfig = dashboardState.found
-  ? dashboardState.value
+  ? migrateDashboardConfig(dashboardState.value, defaultDashboardConfig)
   : {
       ...defaultDashboardConfig,
       preferences: { ...preferencesState.value },
@@ -310,13 +332,21 @@ function configWithChanges(change) {
       widgetIds.map((id) => [id, { ...dashboardConfig.widgets[id] }]),
     ),
     preferences: { ...preferences },
+    dock: {
+      order: [...dashboardConfig.dock.order],
+      apps: Object.fromEntries(
+        appIds.map((id) => [id, { ...dashboardConfig.dock.apps[id] }]),
+      ),
+    },
   };
   change(next);
   return next;
 }
 function commitDashboardConfig(nextConfig, message) {
-  if (!persist("dashboard-config", nextConfig, isDashboardConfig)) {
+  if (!persist("dashboard-config", nextConfig, isValidDashboardConfig)) {
     updatePersonalizationControls();
+    renderDockCatalog();
+    renderDock();
     return false;
   }
 
@@ -349,6 +379,9 @@ function updatePersonalizationControls() {
   $("temperatureUnit").value = preferences.temperatureUnit;
   $("dashboardTheme").value = dashboardConfig.theme;
   $("dashboardWallpaper").value = dashboardConfig.wallpaper;
+}
+function getAppById(id) {
+  return apps.find((app) => app[4] === id);
 }
 function makeControlButton(label, text, onClick) {
   const button = element("button", "widget-control", text);
@@ -387,10 +420,90 @@ function renderWidgetCatalog() {
         ),
       );
     }
-
     row.append(actions);
     catalog.append(row);
   });
+}
+function renderDockCatalog() {
+  const catalog = $("dockCatalog");
+  catalog.replaceChildren();
+
+  dashboardConfig.dock.order.forEach((id) => {
+    const app = getAppById(id);
+    const state = dashboardConfig.dock.apps[id];
+    const row = element("div", "dock-catalog-row");
+    const appLabel = element("span", "dock-catalog-app", app[0]);
+    const iconSelect = element("select", "dock-icon-select");
+    iconSelect.setAttribute("aria-label", `Ícone de ${app[0]}`);
+    dockIconOptions.forEach(([iconName, label]) => {
+      const option = element("option", "", label);
+      option.value = iconName;
+      option.selected = state.icon === iconName;
+      iconSelect.append(option);
+    });
+    iconSelect.onchange = () => updateDockApp(id, { icon: iconSelect.value });
+
+    const actions = element("div", "widget-catalog-actions");
+    const visibleApps = dashboardConfig.dock.order.filter(
+      (appId) => dashboardConfig.dock.apps[appId].visible,
+    );
+    const visiblePosition = visibleApps.indexOf(id);
+    const moveUp = makeControlButton(
+      `Mover ${app[0]} para a esquerda`,
+      "←",
+      () => moveDockApp(id, -1),
+    );
+    moveUp.disabled = !state.visible || visiblePosition === 0;
+    const moveDown = makeControlButton(
+      `Mover ${app[0]} para a direita`,
+      "→",
+      () => moveDockApp(id, 1),
+    );
+    moveDown.disabled =
+      !state.visible || visiblePosition === visibleApps.length - 1;
+    actions.append(
+      moveUp,
+      moveDown,
+      makeControlButton(
+        `${state.visible ? "Remover" : "Adicionar"} ${app[0]} ${state.visible ? "da" : "à"} dock`,
+        state.visible ? "Remover" : "Adicionar",
+        () => updateDockApp(id, { visible: !state.visible }),
+      ),
+    );
+    row.append(appLabel, iconSelect, actions);
+    catalog.append(row);
+  });
+}
+function updateDockApp(id, changes) {
+  const nextConfig = configWithChanges((next) => {
+    Object.assign(next.dock.apps[id], changes);
+  });
+  commitDashboardConfig(nextConfig, "Dock atualizada.");
+}
+function moveDockApp(id, direction) {
+  const nextConfig = configWithChanges((next) => {
+    const positions = next.dock.order
+      .map((appId, index) => (next.dock.apps[appId].visible ? index : -1))
+      .filter((index) => index >= 0);
+    const visibleIds = positions.map((index) => next.dock.order[index]);
+    const visiblePosition = visibleIds.indexOf(id);
+    const targetPosition = visiblePosition + direction;
+    if (
+      visiblePosition < 0 ||
+      targetPosition < 0 ||
+      targetPosition >= visibleIds.length
+    ) {
+      return;
+    }
+
+    const currentIndex = positions[visiblePosition];
+    const targetIndex = positions[targetPosition];
+    [next.dock.order[currentIndex], next.dock.order[targetIndex]] = [
+      next.dock.order[targetIndex],
+      next.dock.order[currentIndex],
+    ];
+  });
+  commitDashboardConfig(nextConfig, "Ordem da dock atualizada.");
 }
 function changeWidget(id, changes) {
   const nextConfig = configWithChanges((next) => {
@@ -514,6 +627,8 @@ function applyDashboardConfig() {
   document.body.dataset.wallpaper = dashboardConfig.wallpaper;
   updatePersonalizationControls();
   renderWidgetCatalog();
+  renderDockCatalog();
+  renderDock();
   icons();
 }
 function syncWidgetLifecycles() {
@@ -749,20 +864,26 @@ function deleteEvent(index) {
 // 06. Dock e interações
 function renderDock() {
   const root = $("dockApps");
-  [
-    ["Orbe", "layout-grid", "", ""],
-    ...apps.slice(0, 5),
-    apps[6],
-    apps[7],
-  ].forEach((a) => {
-    const b = element("button");
-    b.title = a[0];
-    b.append(icon(a[1]));
-    b.onclick = () =>
-      a[0] === "Orbe"
-        ? window.scrollTo({ top: 0, behavior: "smooth" })
-        : launch(a);
-    root.append(b);
+  root.replaceChildren();
+  const homeButton = element("button", "dock-home");
+  homeButton.type = "button";
+  homeButton.title = "Início do Orbe";
+  homeButton.setAttribute("aria-label", "Início do Orbe");
+  homeButton.append(icon("layout-grid"));
+  homeButton.onclick = () => window.scrollTo({ top: 0, behavior: "smooth" });
+  root.append(homeButton);
+
+  dashboardConfig.dock.order.forEach((id) => {
+    const state = dashboardConfig.dock.apps[id];
+    if (!state.visible) return;
+    const app = getAppById(id);
+    const button = element("button", "dock-app");
+    button.type = "button";
+    button.title = app[0];
+    button.setAttribute("aria-label", app[0]);
+    button.append(icon(state.icon));
+    button.onclick = () => launch(app);
+    root.append(button);
   });
   icons();
 }
@@ -791,14 +912,18 @@ async function importDashboardConfig(file) {
   }
   try {
     const imported = JSON.parse(await file.text());
-    if (!isDashboardConfig(imported)) {
+    if (!isValidDashboardConfig(imported)) {
       notify(
         "Configuração inválida ou incompatível. Nenhuma alteração foi aplicada.",
         true,
       );
       return;
     }
-    if (commitDashboardConfig(imported, "Configuração importada.")) {
+    const migratedConfig = migrateDashboardConfig(
+      imported,
+      defaultDashboardConfig,
+    );
+    if (commitDashboardConfig(migratedConfig, "Configuração importada.")) {
       $("widgetSettings").scrollIntoView({ behavior: "smooth" });
     }
   } catch {
@@ -813,7 +938,12 @@ function initialize() {
   renderNav();
   renderAgenda();
   renderNotes();
-  renderDock();
+  if (
+    dashboardNeedsMigration &&
+    persist("dashboard-config", dashboardConfig, isValidDashboardConfig)
+  ) {
+    notify("Configuração existente atualizada para o novo formato.");
+  }
   if (agendaNeedsDateMigration) {
     persist("agenda", agenda, isAgendaList);
   }

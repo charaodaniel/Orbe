@@ -555,6 +555,7 @@ A proposta atual é criar um ambiente digital pessoal, personalizável e multipl
 - Agenda e notas com criação, edição, remoção e persistência local.
 - Migração das chaves antigas `metro-start-*` sem apagar os dados de origem.
 - Manifesto, ícones, cache offline e atualização confirmada do Service Worker.
+- Gerenciamento da dock: adicionar/remover apps, reordenar atalhos e escolher ícones Lucide locais; preferências são persistidas e exportadas.
 - Indicador de conexão e previsão do tempo obtida via Open-Meteo.
 - Informações do sistema limitadas ao navegador, ou métricas agregadas via agente Linux opcional.
 - Agente Linux local autorizado por token, com descoberta e abertura de aplicativos instalados por identificador.

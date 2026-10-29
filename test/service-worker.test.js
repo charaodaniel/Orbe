@@ -6,9 +6,11 @@ const vm = require("node:vm");
 const { before, test } = require("node:test");
 
 let source;
+let cacheName;
 
 before(async () => {
   source = await readFile(new URL("../sw.js", `file://${__filename}`), "utf8");
+  cacheName = source.match(/const CACHE_NAME = "([^"]+)";/)[1];
 });
 
 function createServiceWorker({
@@ -28,17 +30,17 @@ function createServiceWorker({
     async addAll(files) {
       this.added = [...files];
       for (const file of files) {
-        cacheStores.get("orbe-v7").set(
+        cacheStores.get(cacheName).set(
           new URL(file, "https://orbe.example/app/").href,
           new Response(`cached:${file}`),
         );
       }
     },
     async match(request) {
-      return cacheStores.get("orbe-v7").get(cacheKey(request));
+      return cacheStores.get(cacheName).get(cacheKey(request));
     },
     async put(request, response) {
-      cacheStores.get("orbe-v7").set(cacheKey(request), response);
+      cacheStores.get(cacheName).set(cacheKey(request), response);
     },
   };
   const caches = {
@@ -93,7 +95,7 @@ test("install pre-caches the offline application shell", async () => {
 test("navigation falls back to the cached app shell when offline", async () => {
   const { handlers, cacheStores } = createServiceWorker();
   cacheStores.set(
-    "orbe-v7",
+    cacheName,
     new Map([
       [
         "https://orbe.example/app/index.html",
@@ -155,7 +157,7 @@ test("same-origin assets are cache-first and new responses are cached", async ()
     },
   });
   cacheStores.set(
-    "orbe-v7",
+    cacheName,
     new Map([["https://orbe.example/js/cached.js", new Response("cache asset")]]),
   );
   let cachedResponse;
@@ -186,6 +188,6 @@ test("same-origin assets are cache-first and new responses are cached", async ()
   assert.equal(await (await newResponse).text(), "network asset");
   assert.equal(networkCalls, 1);
   assert.ok(
-    cacheStores.get("orbe-v7").has("https://orbe.example/js/new.js"),
+    cacheStores.get(cacheName).has("https://orbe.example/js/new.js"),
   );
 });

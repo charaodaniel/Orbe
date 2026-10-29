@@ -524,7 +524,13 @@ h2 {
   align-items: center;
   gap: 16px;
 }
+.dock #dockApps {
+  min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
 .dock button {
+  flex: 0 0 34px;
   border: 0;
   background: none;
   width: 34px;
@@ -535,6 +541,10 @@ h2 {
 .dock button:hover {
   background: #ffffff20;
   border-radius: 9px;
+}
+.dock button:focus-visible {
+  outline: 2px solid #8bd8ff;
+  outline-offset: 2px;
 }
 .status {
   font-size: 12px;
@@ -968,7 +978,17 @@ h2 {
   border-top: 1px solid var(--border);
   padding-top: 12px;
 }
+.dock-manager {
+  margin-top: 12px;
+  border-top: 1px solid var(--border);
+  padding-top: 12px;
+}
 .widget-manager summary {
+  cursor: pointer;
+  color: #d5e0eb;
+  font-size: 13px;
+}
+.dock-manager summary {
   cursor: pointer;
   color: #d5e0eb;
   font-size: 13px;
@@ -995,6 +1015,46 @@ h2 {
 }
 .config-actions {
   margin-top: 14px;
+}
+.dock-catalog {
+  display: grid;
+  gap: 8px;
+  margin-top: 10px;
+}
+.dock-catalog-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 120px auto;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  color: #d5e0eb;
+  font-size: 12px;
+}
+.dock-catalog-app {
+  overflow-wrap: anywhere;
+}
+.dock-icon-select {
+  width: 100%;
+  min-width: 0;
+  min-height: 30px;
+  padding: 4px 6px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #152332;
+  color: inherit;
+  font-size: 11px;
+}
+.dock-catalog-row .widget-catalog-actions {
+  flex-wrap: nowrap;
+}
+@media (max-width: 700px) {
+  .dock-catalog-row {
+    grid-template-columns: minmax(0, 1fr) 100px;
+  }
+  .dock-catalog-row .widget-catalog-actions {
+    grid-column: 1 / -1;
+    justify-content: flex-end;
+  }
 }
 .linux-agent-settings {
   margin-top: 18px;

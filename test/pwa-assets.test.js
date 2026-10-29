@@ -70,9 +70,18 @@ test("dashboard exposes named controls and responsive breakpoints", async () => 
   const css = await readFile(path.join(root, "css/style.css"), "utf8");
   const ids = [...html.matchAll(/\bid="([^"]+)"/g)].map((match) => match[1]);
   assert.equal(new Set(ids).size, ids.length, "HTML IDs must be unique");
-  for (const id of ["search", "apps", "dockApps", "nav", "notes", "agenda"]) {
+  for (const id of [
+    "search",
+    "apps",
+    "dockApps",
+    "dockCatalog",
+    "nav",
+    "notes",
+    "agenda",
+  ]) {
     assert.ok(ids.includes(id), `missing interactive element #${id}`);
   }
+  assert.match(html, /Gerenciar dock e ícones/);
   for (const breakpoint of [700, 1050, 1350]) {
     assert.ok(css.includes(`(max-width: ${breakpoint}px)`));
   }
