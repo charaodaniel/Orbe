@@ -1,23 +1,29 @@
-const CACHE_NAME = "orbe-v1";
+const CACHE_NAME = "orbe-v5";
 const APP_FILES = [
   "./",
   "./index.html",
   "./manifest.json",
   "./css/style.css",
   "./js/script.js",
+  "./js/storage.js",
+  "./js/pwa.js",
   "./js/widgets.js",
+  "./js/calendar.js",
+  "./js/weather.js",
   "./js/linux.js",
+  "./js/vendor/lucide.min.js",
   "./icons/icon-192.png",
   "./icons/icon-512.png",
 ];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
-    Promise.all([
-      caches.open(CACHE_NAME).then((cache) => cache.addAll(APP_FILES)),
-      self.skipWaiting(),
-    ]),
+    caches.open(CACHE_NAME).then((cache) => cache.addAll(APP_FILES)),
   );
+});
+
+self.addEventListener("message", (event) => {
+  if (event.data?.type === "SKIP_WAITING") event.waitUntil(self.skipWaiting());
 });
 
 self.addEventListener("activate", (event) => {
@@ -44,30 +50,35 @@ self.addEventListener("fetch", (event) => {
 
   if (request.mode === "navigate") {
     event.respondWith(
-      fetch(request)
-        .then((response) => {
-          const copy = response.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(request, copy));
+      (async () => {
+        try {
+          const response = await fetch(request);
+          if (response.ok) {
+            const cache = await caches.open(CACHE_NAME);
+            await cache.put(request, response.clone());
+          }
           return response;
-        })
-        .catch(
-          async () =>
-            (await caches.match(request)) || caches.match("./index.html"),
-        ),
+        } catch {
+          return (
+            (await caches.match(request)) ||
+            (await caches.match("./index.html")) ||
+            Response.error()
+          );
+        }
+      })(),
     );
     return;
   }
 
   event.respondWith(
-    caches.match(request).then((cached) => {
+    caches.match(request).then(async (cached) => {
       if (cached) return cached;
-      return fetch(request).then((response) => {
-        if (response.ok) {
-          const copy = response.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(request, copy));
-        }
-        return response;
-      });
+      const response = await fetch(request);
+      if (response.ok) {
+        const cache = await caches.open(CACHE_NAME);
+        await cache.put(request, response.clone());
+      }
+      return response;
     }),
   );
 });

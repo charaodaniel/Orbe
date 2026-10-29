@@ -1,4 +1,5 @@
 # Orbe
+
 # 🌐 Orbe
 
 **Seu espaço digital. Do seu jeito.**
@@ -9,8 +10,8 @@ O projeto é inspirado na experiência de widgets do Android e da Motorola, comb
 
 O Orbe será multiplataforma, com suporte a Linux, Windows, Android e navegadores modernos.
 
-> **Status:** Em desenvolvimento  
-> **Versão planejada:** 0.1.0  
+> **Status:** Fases 1 e 2 implementadas; validação multiplataforma pendente  
+> **Versão:** 0.1.0 em desenvolvimento  
 > **Projeto anterior:** Metro Start  
 > **Hospedagem planejada:** Vercel
 
@@ -33,25 +34,26 @@ Criar um dashboard pessoal que permita ao usuário organizar e acessar seus recu
 
 ## 2. Tecnologias
 
-| Tecnologia | Utilização |
-|---|---|
-| HTML5 | Estrutura da interface |
-| CSS3 | Estilização e animações |
-| Tailwind CSS | Classes utilitárias via CDN durante o desenvolvimento |
-| JavaScript | Funcionalidades e componentes |
-| Node.js | Agente local opcional |
-| IndexedDB | Armazenamento estruturado |
-| localStorage | Preferências simples |
-| Service Worker | Cache e funcionamento offline |
-| Web App Manifest | Instalação PWA |
-| Lucide Icons | Ícones da interface |
-| Vercel | Hospedagem da aplicação web |
+| Tecnologia       | Utilização                                                  |
+| ---------------- | ----------------------------------------------------------- |
+| HTML5            | Estrutura da interface                                      |
+| CSS3             | Estilização e animações                                     |
+| Tailwind CSS     | Não utilizado atualmente; a interface usa CSS próprio       |
+| JavaScript       | Funcionalidades e componentes                               |
+| Node.js          | Agente local opcional                                       |
+| IndexedDB        | Planejado; os dados atuais usam localStorage                |
+| localStorage     | Persistência atual de notas e agenda via `js/storage.js`    |
+| Service Worker   | Cache local, fallback offline e atualização sob confirmação |
+| Web App Manifest | Instalação PWA                                              |
+| Lucide Icons     | Ícones locais em `js/vendor/lucide.min.js`                  |
+| Open-Meteo       | Geocodificação e previsão meteorológica sem chave de API    |
+| Vercel           | Hospedagem da aplicação web                                 |
 
-**Observação:** para a versão offline de produção, os recursos essenciais deverão ser disponibilizados localmente, sem depender exclusivamente de CDNs.
+**Observação:** os recursos funcionais essenciais não dependem de CDN. Os fundos fotográficos são decorativos e ainda usam URLs externas; os gradientes permanecem como fallback offline.
 
 ## 3. Identidade visual
 
-O Orbe utilizará uma identidade própria, abandonando o estilo Windows Phone do antigo Metro Start.
+O Orbe utiliza uma identidade própria, abandonando o estilo Windows Phone do antigo Metro Start.
 
 ### Diretrizes
 
@@ -69,13 +71,13 @@ O Orbe utilizará uma identidade própria, abandonando o estilo Windows Phone do
 
 ### Paleta inicial
 
-| Elemento | Cor |
-|---|---|
-| Azul principal | `#168BFF` |
-| Ciano | `#00C8FF` |
-| Fundo escuro | `#071B2A` |
-| Verde | `#22C55E` |
-| Roxo | `#8B5CF6` |
+| Elemento         | Cor       |
+| ---------------- | --------- |
+| Azul principal   | `#168BFF` |
+| Ciano            | `#00C8FF` |
+| Fundo escuro     | `#071B2A` |
+| Verde            | `#22C55E` |
+| Roxo             | `#8B5CF6` |
 | Texto secundário | `#A8B5C4` |
 
 As cores poderão ser modificadas pelo usuário futuramente.
@@ -86,16 +88,16 @@ As cores poderão ser modificadas pelo usuário futuramente.
 
 ## 4.1. Interface principal
 
-- [ ] Implementar identidade visual Orbe.
-- [ ] Criar cabeçalho com pesquisa global.
-- [ ] Criar menu lateral.
-- [ ] Implementar dock inferior.
-- [ ] Criar painel de aplicativos.
-- [ ] Criar painel de acesso rápido.
-- [ ] Implementar área de widgets.
+- [x] Implementar identidade visual Orbe básica.
+- [x] Criar cabeçalho com pesquisa de aplicativos.
+- [x] Criar menu lateral.
+- [x] Implementar dock inferior.
+- [x] Criar painel de aplicativos.
+- [x] Criar painel de acesso rápido.
+- [x] Implementar área de widgets básica.
 - [ ] Adicionar modo tela cheia.
-- [ ] Criar interface responsiva.
-- [ ] Adicionar animações e transições.
+- [x] Criar interface responsiva.
+- [x] Adicionar transições básicas.
 
 ## 4.2. Gerenciamento de aplicativos
 
@@ -103,58 +105,64 @@ As cores poderão ser modificadas pelo usuário futuramente.
 - [ ] Editar nome, URL e ícone.
 - [ ] Buscar favicon automaticamente.
 - [ ] Organizar aplicativos por categorias.
-- [ ] Implementar pesquisa de aplicativos.
+- [x] Implementar pesquisa de aplicativos.
 - [ ] Fixar aplicativos no dock.
 - [ ] Remover aplicativos do dock.
 - [ ] Reorganizar atalhos por arrastar e soltar.
 - [ ] Importar e exportar aplicativos em JSON.
-- [ ] Configurar abertura em nova aba ou janela.
+- [x] Abrir links configurados em nova aba.
 
 ## 4.3. Widgets
 
 ### Relógio
 
-- [ ] Relógio circular inspirado na Motorola.
-- [ ] Exibir data e horário.
-- [ ] Suporte a formatos de 12 e 24 horas.
+- [x] Relógio circular inspirado na Motorola.
+- [x] Exibir data e horário.
+- [x] Suporte a formatos de 12 e 24 horas.
 - [ ] Personalização de cores.
 - [ ] Relógio digital alternativo.
 
 ### Clima
 
-- [ ] Consultar informações meteorológicas reais.
-- [ ] Exibir temperatura atual.
-- [ ] Mostrar condições climáticas.
-- [ ] Exibir temperatura máxima e mínima.
-- [ ] Permitir selecionar cidade.
-- [ ] Adicionar previsão resumida.
+- [x] Consultar informações meteorológicas reais.
+- [x] Exibir temperatura atual.
+- [x] Mostrar condições climáticas.
+- [x] Exibir temperatura máxima e mínima.
+- [x] Permitir selecionar cidade.
+- [x] Exibir máxima, mínima, sensação térmica e umidade.
+- [x] Selecionar Celsius ou Fahrenheit, incluindo conversão do último dado salvo offline.
+
+> O clima usa geocodificação e previsão da Open-Meteo. A última previsão é mantida localmente; novas consultas e cidades exigem conexão.
 
 ### Calendário e agenda
 
-- [ ] Exibir calendário mensal.
-- [ ] Criar eventos.
-- [ ] Editar eventos.
-- [ ] Excluir eventos.
-- [ ] Exibir compromissos do dia.
-- [ ] Salvar agenda localmente.
+- [x] Exibir calendário mensal.
+- [x] Criar eventos.
+- [x] Editar eventos.
+- [x] Excluir eventos.
+- [x] Exibir compromissos do dia.
+- [x] Salvar agenda localmente.
+- [x] Selecionar um dia no calendário e mostrar seus eventos.
 
 ### Notas rápidas
 
-- [ ] Criar notas.
-- [ ] Editar notas.
-- [ ] Excluir notas.
-- [ ] Marcar tarefas como concluídas.
-- [ ] Salvar automaticamente.
-- [ ] Restaurar notas ao abrir o aplicativo.
+- [x] Criar notas.
+- [x] Editar notas.
+- [x] Excluir notas.
+- [x] Marcar tarefas como concluídas.
+- [x] Salvar automaticamente.
+- [x] Restaurar notas ao abrir o aplicativo.
 
 ### Sistema
 
-- [ ] Exibir informações básicas do ambiente.
+- [x] Exibir informações básicas do ambiente disponíveis ao navegador.
 - [ ] Monitorar CPU pelo agente Linux.
 - [ ] Monitorar memória RAM.
-- [ ] Exibir armazenamento disponível.
-- [ ] Mostrar informações do sistema operacional.
-- [ ] Detectar conexão com o agente local.
+- [ ] Exibir armazenamento livre do dispositivo.
+- [x] Identificar a plataforma reportada pelo navegador.
+- [x] Detectar conexão com o agente local.
+
+> O navegador informa núcleos lógicos e a quota deste site, mas não expõe uso real de CPU/RAM nem armazenamento livre do dispositivo. Esses valores não são simulados.
 
 ### Outros widgets
 
@@ -168,7 +176,8 @@ As cores poderão ser modificadas pelo usuário futuramente.
 
 ## 4.4. Gerenciamento dos widgets
 
-- [ ] Criar arquitetura modular.
+- [x] Criar ciclo de vida modular com montagem e descarte dos widgets essenciais.
+- [x] Persistir preferências de formato de relógio e unidade de temperatura.
 - [ ] Adicionar widgets ao dashboard.
 - [ ] Remover widgets.
 - [ ] Ocultar e exibir widgets.
@@ -182,19 +191,19 @@ As cores poderão ser modificadas pelo usuário futuramente.
 
 # 5. Progressive Web App (PWA)
 
-O Orbe será desenvolvido como um PWA instalável.
+O Orbe é desenvolvido como um PWA instalável; a validação de instalação por plataforma ainda está pendente.
 
 ## Funcionalidades
 
-- [ ] Criar `manifest.json`.
-- [ ] Criar ícones de 192×192 e 512×512.
-- [ ] Implementar Service Worker.
-- [ ] Configurar cache dos recursos essenciais.
-- [ ] Permitir instalação pelo navegador.
-- [ ] Executar em janela independente.
-- [ ] Implementar funcionamento offline básico.
-- [ ] Detectar disponibilidade de conexão.
-- [ ] Criar estratégia de atualização.
+- [x] Criar `manifest.json`.
+- [x] Criar ícones de 192×192 e 512×512.
+- [x] Implementar Service Worker.
+- [x] Configurar cache dos recursos essenciais locais.
+- [x] Configurar instalação pelo navegador no manifesto.
+- [x] Configurar execução em janela independente.
+- [x] Implementar funcionamento offline básico.
+- [x] Detectar disponibilidade de conexão.
+- [x] Criar atualização com confirmação do usuário.
 - [ ] Testar instalação no Linux.
 - [ ] Testar instalação no Windows.
 - [ ] Testar instalação no Android.
@@ -217,7 +226,7 @@ O agente será responsável pelas funcionalidades que não podem ser executadas 
 
 ## Recursos planejados
 
-- [ ] Criar servidor local Node.js.
+- [x] Criar servidor local Node.js com endpoint de diagnóstico.
 - [ ] Detectar aplicativos instalados.
 - [ ] Ler arquivos `.desktop`.
 - [ ] Obter nomes dos aplicativos.
@@ -226,7 +235,7 @@ O agente será responsável pelas funcionalidades que não podem ser executadas 
 - [ ] Listar aplicativos no Orbe.
 - [ ] Abrir aplicativos com `gtk-launch`.
 - [ ] Consultar informações do sistema.
-- [ ] Detectar disponibilidade do agente.
+- [x] Detectar disponibilidade do agente.
 - [ ] Proteger endpoints locais.
 - [ ] Restringir comandos executáveis.
 - [ ] Implementar autorização entre PWA e agente.
@@ -273,27 +282,28 @@ O Orbe utilizará armazenamento local para preservar informações e preferênci
 
 ### Tecnologias
 
-**localStorage:** preferências simples e dados de configuração pequenos.
+**localStorage:** persistência atual de notas e agenda por meio da camada `js/storage.js`.
 
 **IndexedDB:** armazenamento estruturado, com maior capacidade para dados e configurações do dashboard.
 
 ### Recursos planejados
 
-- [ ] Criar camada de armazenamento.
-- [ ] Implementar salvamento automático.
-- [ ] Restaurar dados ao iniciar.
-- [ ] Migrar dados antigos quando necessário.
+- [x] Criar camada de armazenamento para notas e agenda.
+- [x] Implementar salvamento automático.
+- [x] Restaurar dados ao iniciar.
+- [x] Migrar dados legados de notas e agenda sem apagar as chaves antigas.
 - [ ] Exportar backup JSON.
 - [ ] Importar backup JSON.
 - [ ] Validar arquivos de backup.
 - [ ] Restaurar configurações padrão.
-- [ ] Tratar falhas de armazenamento.
+- [x] Tratar falhas de leitura e gravação do armazenamento.
+- [x] Salvar cidade, última previsão e preferências de relógio/unidades localmente.
 
 Inicialmente, os dados serão locais ao navegador e ao dispositivo. A sincronização entre dispositivos poderá ser estudada futuramente.
 
 ---
 
-# 8. Estrutura planejada
+# 8. Estrutura atual e planejada
 
 ```text
 orbe/
@@ -301,44 +311,33 @@ orbe/
 ├── index.html
 ├── manifest.json
 ├── sw.js
-├── vercel.json
 ├── README.md
+├── relatorio.md
+├── roadmap.md
 │
 ├── css/
-│   ├── style.css
-│   ├── widgets.css
-│   └── themes.css
+│   └── style.css
 │
 ├── js/
 │   ├── script.js
-│   ├── apps.js
-│   ├── widgets.js
 │   ├── storage.js
-│   ├── settings.js
 │   ├── pwa.js
-│   └── linux.js
-│
-├── widgets/
-│   ├── clock.js
-│   ├── weather.js
+│   ├── widgets.js
 │   ├── calendar.js
-│   ├── notes.js
-│   └── system.js
+│   ├── weather.js
+│   ├── linux.js
+│   └── vendor/
+│       └── lucide.min.js
 │
 ├── icons/
 │   ├── icon-192.png
 │   └── icon-512.png
 │
-├── assets/
-│   ├── wallpapers/
-│   └── images/
-│
 └── agent/
-    ├── server.js
-    └── package.json
+    └── server.js
 ```
 
-Essa estrutura representa a arquitetura planejada. Os arquivos serão criados conforme as funcionalidades forem implementadas.
+Ainda planejados: configuração explícita da Vercel, módulos de aplicativos e configurações, estilos separados por widget/tema, widgets independentes, assets locais e empacotamento próprio do agente. A estrutura será expandida quando essas funcionalidades forem implementadas.
 
 ---
 
@@ -348,30 +347,39 @@ Essa estrutura representa a arquitetura planejada. Os arquivos serão criados co
 
 **Objetivo:** disponibilizar uma primeira versão PWA funcional.
 
-- [ ] Renomear o projeto para Orbe.
-- [ ] Organizar a estrutura.
-- [ ] Implementar identidade visual.
-- [ ] Criar relógio circular.
-- [ ] Implementar aplicativos web.
-- [ ] Criar dock com favoritos.
-- [ ] Adicionar notas rápidas.
-- [ ] Implementar armazenamento local.
-- [ ] Criar manifesto PWA.
-- [ ] Implementar Service Worker.
+- [x] Renomear o projeto para Orbe.
+- [x] Organizar a estrutura inicial.
+- [x] Implementar identidade visual básica.
+- [x] Criar relógio circular.
+- [x] Implementar atalhos para aplicativos e sites.
+- [x] Criar dock com atalhos.
+- [x] Adicionar notas rápidas.
+- [x] Implementar armazenamento local com migração.
+- [x] Criar manifesto PWA.
+- [x] Implementar Service Worker.
 - [ ] Publicar na Vercel.
 
 **Resultado esperado:** dashboard web instalável, com atalhos, widgets básicos e persistência de dados.
+
+### Critérios de conclusão da versão 0.1
+
+- [x] Recursos essenciais locais e ícones disponíveis sem dependência de CDN.
+- [x] Notas e eventos podem ser criados, editados, removidos e persistidos.
+- [x] Dados antigos são migrados sem apagar as chaves de origem.
+- [x] Clima consulta dados reais e métricas não disponíveis ao navegador não são simuladas.
+- [ ] Instalação, abertura independente, uso offline e atualização validados nos navegadores e dispositivos suportados.
+- [ ] Fluxos principais validados em desktop e celular, incluindo teclado, estados vazios e erros de armazenamento.
 
 ## Orbe 0.2 — Widgets
 
 **Objetivo:** permitir personalização completa do dashboard.
 
-- [ ] Criar gerenciador de widgets.
+- [x] Criar gerenciador técnico do ciclo de vida dos widgets.
 - [ ] Adicionar e remover widgets.
 - [ ] Reorganizar widgets.
 - [ ] Redimensionar componentes.
-- [ ] Implementar clima real.
-- [ ] Melhorar calendário.
+- [x] Implementar clima real com seleção de cidade.
+- [x] Implementar calendário mensal integrado aos eventos.
 - [ ] Criar editor de layout.
 - [ ] Salvar disposição dos widgets.
 - [ ] Criar temas e personalização.
@@ -524,25 +532,21 @@ A proposta atual é criar um ambiente digital pessoal, personalizável e multipl
 
 # 15. Situação atual
 
-**Fase:** Planejamento e preparação da versão 0.1.
+**Fase:** Consolidação da versão 0.1; validação em dispositivos reais pendente.
 
 ### Base existente
 
-- Protótipo de interface desktop.
-- Relógio digital.
-- Menu lateral.
-- Dock.
-- Cartões de aplicativos.
-- Notas rápidas.
-- Agenda básica.
-- Armazenamento local inicial.
-- Conceito de agente Linux com Node.js.
-
-Esses componentes foram desenvolvidos ou propostos durante a fase Metro Start e deverão ser revisados antes de integrar a primeira versão do Orbe.
+- Dashboard responsivo com pesquisa, menu, dock e painéis de aplicativos.
+- Relógio circular com data e horário.
+- Agenda e notas com criação, edição, remoção e persistência local.
+- Migração das chaves antigas `metro-start-*` sem apagar os dados de origem.
+- Manifesto, ícones, cache offline e atualização confirmada do Service Worker.
+- Indicador de conexão e aviso explícito para valores demonstrativos de clima e sistema.
+- Agente Linux local com endpoint de diagnóstico; ações de sistema ainda não disponíveis.
 
 ### Próxima tarefa
 
-**Iniciar o Orbe 0.1**, reorganizando o código existente, aplicando a nova identidade visual e preparando a estrutura PWA.
+**Validar a Fase 1** em navegadores e dispositivos Linux, Windows e Android, incluindo instalação, funcionamento offline e atualização do Service Worker.
 
 ---
 

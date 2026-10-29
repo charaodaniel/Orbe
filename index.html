@@ -13,11 +13,7 @@
       sizes="192x192"
       href="icons/icon-192.png"
     />
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script
-      src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"
-      defer
-    ></script>
+    <script src="js/vendor/lucide.min.js" defer></script>
     <link rel="stylesheet" href="css/style.css" />
     <script type="module" src="js/script.js"></script>
   </head>
@@ -32,6 +28,7 @@
           ><i data-lucide="search"></i
           ><input
             id="search"
+            aria-label="Pesquisar aplicativos"
             placeholder="Pesquisar aplicativos, arquivos, configurações..."
           /><kbd>Ctrl + K</kbd></label
         >
@@ -51,12 +48,67 @@
         <main>
           <div class="topwidgets">
             <section class="weather glass">
-              <p>Minha cidade</p>
-              <div class="weather-big">
-                <i data-lucide="cloud-sun"></i><strong>24°</strong>
+              <div class="weather-heading">
+                <div>
+                  <p class="weather-label">Clima</p>
+                  <h2 id="weatherCityName">Selecione uma cidade</h2>
+                </div>
+                <button
+                  id="weatherChoose"
+                  class="icon-button"
+                  type="button"
+                  aria-label="Usar cidade selecionada"
+                  title="Usar cidade selecionada"
+                >
+                  <i data-lucide="map-pin-check"></i>
+                </button>
               </div>
-              <p>Parcialmente nublado</p>
-              <p>↑ 28° &nbsp; ↓ 16°</p>
+              <form id="weatherSearch" class="weather-search">
+                <input
+                  id="weatherCity"
+                  type="search"
+                  placeholder="Buscar cidade"
+                  autocomplete="off"
+                  aria-label="Buscar cidade para previsão do tempo"
+                />
+                <button
+                  class="icon-button"
+                  type="submit"
+                  aria-label="Buscar cidade"
+                >
+                  <i data-lucide="search"></i>
+                </button>
+              </form>
+              <div id="weatherResults" class="weather-results" hidden>
+                <label for="weatherLocations">Resultados</label>
+                <select
+                  id="weatherLocations"
+                  aria-label="Selecionar cidade"
+                ></select>
+              </div>
+              <p
+                id="weatherStatus"
+                class="weather-status"
+                role="status"
+                aria-live="polite"
+              ></p>
+              <div class="weather-big">
+                <i id="weatherIcon" data-lucide="cloud-sun"></i>
+                <strong id="weatherTemperature">--°</strong>
+              </div>
+              <p id="weatherCondition">Consulte a previsão online</p>
+              <p id="weatherRange">Máx. --° · Mín. --°</p>
+              <p id="weatherDetails"></p>
+              <p id="weatherUpdated" class="weather-updated"></p>
+              <p class="weather-attribution">
+                Dados meteorológicos:
+                <a
+                  href="https://open-meteo.com/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  >Open-Meteo</a
+                >
+              </p>
             </section>
             <section class="clock">
               <div class="clock-ring">
@@ -68,12 +120,56 @@
             </section>
             <section class="agenda glass">
               <div class="section-head">
-                <h2><i data-lucide="calendar-days"></i> Hoje</h2>
-                <button id="addEvent" class="round">+</button>
+                <h2><i data-lucide="calendar-days"></i> Agenda</h2>
               </div>
+              <p id="agendaDate" class="agenda-date"></p>
               <div id="agenda"></div>
             </section>
           </div>
+          <section class="panel glass calendar-widget">
+            <div class="section-head calendar-heading">
+              <h2><i data-lucide="calendar-days"></i> Calendário</h2>
+              <div class="calendar-controls">
+                <button
+                  id="calendarPrevious"
+                  class="icon-button"
+                  type="button"
+                  aria-label="Mês anterior"
+                  title="Mês anterior"
+                >
+                  <i data-lucide="chevron-left"></i>
+                </button>
+                <strong id="calendarMonth" aria-live="polite"></strong>
+                <button
+                  id="calendarNext"
+                  class="icon-button"
+                  type="button"
+                  aria-label="Próximo mês"
+                  title="Próximo mês"
+                >
+                  <i data-lucide="chevron-right"></i>
+                </button>
+                <button
+                  id="addEvent"
+                  class="round"
+                  type="button"
+                  aria-label="Adicionar evento"
+                  title="Adicionar evento"
+                >
+                  +
+                </button>
+              </div>
+            </div>
+            <div class="calendar-weekdays" aria-hidden="true">
+              <span>Dom</span><span>Seg</span><span>Ter</span><span>Qua</span
+              ><span>Qui</span><span>Sex</span><span>Sáb</span>
+            </div>
+            <div
+              id="calendarGrid"
+              class="calendar-grid"
+              aria-label="Dias do mês"
+            ></div>
+          </section>
           <section class="panel glass" id="appsPanel">
             <div class="section-head">
               <h2>Aplicativos</h2>
@@ -90,16 +186,47 @@
           </section>
         </main>
         <aside class="right">
-          <section class="stats glass">
-            <div class="stat" style="--value: 18; --color: #32b6ff">
-              <div>CPU<strong>18%</strong></div>
-            </div>
-            <div class="stat" style="--value: 52; --color: #4ddb80">
-              <div>RAM<strong>52%</strong></div>
-            </div>
-            <div class="stat" style="--value: 68; --color: #ad76ff">
-              <div>SSD<strong>68%</strong></div>
-            </div>
+          <section class="panel glass" id="widgetSettings">
+            <h2><i data-lucide="sliders-horizontal"></i> Preferências</h2>
+            <label class="setting-row" for="clockFormat">
+              <span>Formato do relógio</span>
+              <select id="clockFormat">
+                <option value="24">24 horas</option>
+                <option value="12">12 horas</option>
+              </select>
+            </label>
+            <label class="setting-row" for="temperatureUnit">
+              <span>Temperatura</span>
+              <select id="temperatureUnit">
+                <option value="celsius">Celsius</option>
+                <option value="fahrenheit">Fahrenheit</option>
+              </select>
+            </label>
+          </section>
+          <section class="panel glass" id="systemPanel">
+            <h2><i data-lucide="monitor"></i> Sistema</h2>
+            <dl class="system-details">
+              <div>
+                <dt>Plataforma</dt>
+                <dd id="systemPlatform">Detectando…</dd>
+              </div>
+              <div>
+                <dt>Núcleos lógicos</dt>
+                <dd id="systemCompute">Consultando…</dd>
+              </div>
+              <div>
+                <dt>Uso de CPU/RAM</dt>
+                <dd id="systemMemory">Protegido pelo navegador</dd>
+              </div>
+              <div>
+                <dt>Armazenamento deste site</dt>
+                <dd id="systemStorage">Consultando…</dd>
+              </div>
+            </dl>
+            <p class="system-note">
+              O navegador não fornece uso real de CPU ou RAM. O armazenamento
+              exibido é apenas deste site.
+            </p>
           </section>
           <section class="panel glass">
             <h2>Mídia</h2>
@@ -122,23 +249,29 @@
           <section class="panel glass">
             <div class="section-head">
               <h2>Notas rápidas</h2>
-              <button id="addNote" class="round">+</button>
+              <button
+                id="addNote"
+                class="round"
+                aria-label="Adicionar nota"
+                title="Adicionar nota"
+              >
+                +
+              </button>
             </div>
             <div id="notes"></div>
           </section>
-          <section class="panel glass">
-            <h2><i data-lucide="settings"></i> Sistema</h2>
-            <div class="system">
-              <div class="system-icon"><i data-lucide="monitor"></i></div>
-              <div>
-                <b>Orbe</b>
-                <p>Dashboard Web</p>
-                <p>Sessão ativa</p>
-                <p id="linuxStatus">Agente Linux opcional</p>
-              </div>
-            </div>
-          </section>
         </aside>
+      </div>
+      <div class="system-status glass">
+        <span id="linuxStatus">Agente Linux opcional</span>
+        <span id="connectionStatus" role="status" aria-live="polite"></span>
+        <span
+          id="appStatus"
+          class="app-status"
+          role="status"
+          aria-live="polite"
+          hidden
+        ></span>
       </div>
       <footer class="dock glass">
         <div id="dockApps"></div>
