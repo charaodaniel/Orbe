@@ -3,20 +3,29 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Metro Start</title>
+    <title>Orbe</title>
+    <meta name="description" content="Dashboard pessoal personalizável Orbe" />
+    <meta name="theme-color" content="#0879d0" />
+    <link rel="manifest" href="manifest.json" />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="192x192"
+      href="icons/icon-192.png"
+    />
     <script src="https://cdn.tailwindcss.com"></script>
     <script
       src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"
       defer
     ></script>
     <link rel="stylesheet" href="css/style.css" />
-    <script src="js/script.js" defer></script>
+    <script type="module" src="js/script.js"></script>
   </head>
   <body>
     <div class="shell">
       <header>
         <div class="brand">
-          <h1>Metro <span>Start</span></h1>
+          <h1>Orbe</h1>
           <p>Seu desktop, do seu jeito</p>
         </div>
         <label class="search glass"
@@ -122,9 +131,10 @@
             <div class="system">
               <div class="system-icon"><i data-lucide="monitor"></i></div>
               <div>
-                <b>Metro Start</b>
+                <b>Orbe</b>
                 <p>Dashboard Web</p>
                 <p>Sessão ativa</p>
+                <p id="linuxStatus">Agente Linux opcional</p>
               </div>
             </div>
           </section>

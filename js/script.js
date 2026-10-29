@@ -1,4 +1,7 @@
 "use strict";
+import { updateClock } from "./widgets.js";
+import { checkLinuxAgent } from "./linux.js";
+
 // 01. Dados e configurações
 const apps = [
   ["Navegador", "globe", "blue", "https://www.google.com"],
@@ -129,22 +132,6 @@ function renderNav() {
   });
   icons();
 }
-// 04. Relógio
-function updateClock() {
-  const now = new Date();
-  const time = now.toLocaleTimeString("pt-BR", {
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-  $("clockTime").textContent = time;
-  $("dockTime").textContent = time;
-  $("clockDate").textContent = now.toLocaleDateString("pt-BR", {
-    weekday: "short",
-    day: "numeric",
-    month: "short",
-  });
-  $("dockDate").textContent = now.toLocaleDateString("pt-BR");
-}
 // 05. Agenda e notas persistentes
 function renderAgenda() {
   const root = $("agenda");
@@ -177,7 +164,7 @@ function renderNotes() {
 function renderDock() {
   const root = $("dockApps");
   [
-    ["Metro Start", "layout-grid", "", ""],
+    ["Orbe", "layout-grid", "", ""],
     ...apps.slice(0, 5),
     apps[6],
     apps[7],
@@ -186,7 +173,7 @@ function renderDock() {
     b.title = a[0];
     b.append(icon(a[1]));
     b.onclick = () =>
-      a[0] === "Metro Start"
+      a[0] === "Orbe"
         ? window.scrollTo({ top: 0, behavior: "smooth" })
         : launch(a);
     root.append(b);
@@ -201,6 +188,10 @@ function initialize() {
   renderNotes();
   renderDock();
   updateClock();
+  checkLinuxAgent();
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("./sw.js").catch(() => {});
+  }
   setInterval(updateClock, 1000);
   $("search").oninput = (e) => renderApps(e.target.value);
   document.addEventListener("keydown", (e) => {
