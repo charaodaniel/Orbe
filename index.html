@@ -1,2 +1,142 @@
-<!DOCTYPE html><html lang="pt-BR"><head>
-    <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Metro Start</title><script src="https://cdn.tailwindcss.com"></script><script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js" defer></script><link rel="stylesheet" href="css/style.css"><script src="js/script.js" defer></script></head><body><div class="shell"><header><div class="brand"><h1>Metro <span>Start</span></h1><p>Seu desktop, do seu jeito</p></div><label class="search glass"><i data-lucide="search"></i><input id="search" placeholder="Pesquisar aplicativos, arquivos, configurações..."><kbd>Ctrl + K</kbd></label><div class="profile glass"><i data-lucide="bell"></i><span class="avatar">DM</span><span>Meu perfil</span></div></header><div class="layout"><aside class="sidebar glass"><nav id="nav"></nav><div class="favorites"><h3>Favoritos</h3><div id="favorites"></div></div></aside><main><div class="topwidgets"><section class="weather glass"><p>Minha cidade</p><div class="weather-big"><i data-lucide="cloud-sun"></i><strong>24°</strong></div><p>Parcialmente nublado</p><p>↑ 28° &nbsp; ↓ 16°</p></section><section class="clock"><div class="clock-ring"><div class="clock-face"><small id="clockDate"></small><strong id="clockTime"></strong><small>🔔 3</small></div></div></section><section class="agenda glass"><div class="section-head"><h2><i data-lucide="calendar-days"></i> Hoje</h2><button id="addEvent" class="round">+</button></div><div id="agenda"></div></section></div><section class="panel glass" id="appsPanel"><div class="section-head"><h2>Aplicativos</h2><button id="showApps">Ver todos →</button></div><div id="apps" class="appgrid"></div></section><section class="panel glass" id="quickPanel"><div class="section-head"><h2>Acesso rápido</h2><button>Ver todos →</button></div><div id="quick" class="quickgrid"></div></section></main><aside class="right"><section class="stats glass"><div class="stat" style="--value:18;--color:#32b6ff"><div>CPU<strong>18%</strong></div></div><div class="stat" style="--value:52;--color:#4ddb80"><div>RAM<strong>52%</strong></div></div><div class="stat" style="--value:68;--color:#ad76ff"><div>SSD<strong>68%</strong></div></div></section><section class="panel glass"><h2>Mídia</h2><div class="track"><div class="cover"><i data-lucide="music"></i></div><div><b>Música</b><p>Player de mídia</p></div><i data-lucide="heart"></i></div><p class="time">1:42 / 3:07</p><div class="progress"><div></div></div><div class="controls"><button><i data-lucide="skip-back"></i></button><button id="play"><i data-lucide="play"></i></button><button><i data-lucide="skip-forward"></i></button></div></section><section class="panel glass"><div class="section-head"><h2>Notas rápidas</h2><button id="addNote" class="round">+</button></div><div id="notes"></div></section><section class="panel glass"><h2><i data-lucide="settings"></i> Sistema</h2><div class="system"><div class="system-icon"><i data-lucide="monitor"></i></div><div><b>Metro Start</b><p>Dashboard Web</p><p>Sessão ativa</p></div></div></section></aside></div><footer class="dock glass"><div id="dockApps"></div><div class="status"><i data-lucide="wifi"></i><i data-lucide="volume-2"></i><span id="dockTime"></span><span id="dockDate"></span></div></footer></div></body></html>
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Metro Start</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script
+      src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"
+      defer
+    ></script>
+    <link rel="stylesheet" href="css/style.css" />
+    <script src="js/script.js" defer></script>
+  </head>
+  <body>
+    <div class="shell">
+      <header>
+        <div class="brand">
+          <h1>Metro <span>Start</span></h1>
+          <p>Seu desktop, do seu jeito</p>
+        </div>
+        <label class="search glass"
+          ><i data-lucide="search"></i
+          ><input
+            id="search"
+            placeholder="Pesquisar aplicativos, arquivos, configurações..."
+          /><kbd>Ctrl + K</kbd></label
+        >
+        <div class="profile glass">
+          <i data-lucide="bell"></i><span class="avatar">DM</span
+          ><span>Meu perfil</span>
+        </div>
+      </header>
+      <div class="layout">
+        <aside class="sidebar glass">
+          <nav id="nav"></nav>
+          <div class="favorites">
+            <h3>Favoritos</h3>
+            <div id="favorites"></div>
+          </div>
+        </aside>
+        <main>
+          <div class="topwidgets">
+            <section class="weather glass">
+              <p>Minha cidade</p>
+              <div class="weather-big">
+                <i data-lucide="cloud-sun"></i><strong>24°</strong>
+              </div>
+              <p>Parcialmente nublado</p>
+              <p>↑ 28° &nbsp; ↓ 16°</p>
+            </section>
+            <section class="clock">
+              <div class="clock-ring">
+                <div class="clock-face">
+                  <small id="clockDate"></small><strong id="clockTime"></strong
+                  ><small>🔔 3</small>
+                </div>
+              </div>
+            </section>
+            <section class="agenda glass">
+              <div class="section-head">
+                <h2><i data-lucide="calendar-days"></i> Hoje</h2>
+                <button id="addEvent" class="round">+</button>
+              </div>
+              <div id="agenda"></div>
+            </section>
+          </div>
+          <section class="panel glass" id="appsPanel">
+            <div class="section-head">
+              <h2>Aplicativos</h2>
+              <button id="showApps">Ver todos →</button>
+            </div>
+            <div id="apps" class="appgrid"></div>
+          </section>
+          <section class="panel glass" id="quickPanel">
+            <div class="section-head">
+              <h2>Acesso rápido</h2>
+              <button>Ver todos →</button>
+            </div>
+            <div id="quick" class="quickgrid"></div>
+          </section>
+        </main>
+        <aside class="right">
+          <section class="stats glass">
+            <div class="stat" style="--value: 18; --color: #32b6ff">
+              <div>CPU<strong>18%</strong></div>
+            </div>
+            <div class="stat" style="--value: 52; --color: #4ddb80">
+              <div>RAM<strong>52%</strong></div>
+            </div>
+            <div class="stat" style="--value: 68; --color: #ad76ff">
+              <div>SSD<strong>68%</strong></div>
+            </div>
+          </section>
+          <section class="panel glass">
+            <h2>Mídia</h2>
+            <div class="track">
+              <div class="cover"><i data-lucide="music"></i></div>
+              <div>
+                <b>Música</b>
+                <p>Player de mídia</p>
+              </div>
+              <i data-lucide="heart"></i>
+            </div>
+            <p class="time">1:42 / 3:07</p>
+            <div class="progress"><div></div></div>
+            <div class="controls">
+              <button><i data-lucide="skip-back"></i></button
+              ><button id="play"><i data-lucide="play"></i></button
+              ><button><i data-lucide="skip-forward"></i></button>
+            </div>
+          </section>
+          <section class="panel glass">
+            <div class="section-head">
+              <h2>Notas rápidas</h2>
+              <button id="addNote" class="round">+</button>
+            </div>
+            <div id="notes"></div>
+          </section>
+          <section class="panel glass">
+            <h2><i data-lucide="settings"></i> Sistema</h2>
+            <div class="system">
+              <div class="system-icon"><i data-lucide="monitor"></i></div>
+              <div>
+                <b>Metro Start</b>
+                <p>Dashboard Web</p>
+                <p>Sessão ativa</p>
+              </div>
+            </div>
+          </section>
+        </aside>
+      </div>
+      <footer class="dock glass">
+        <div id="dockApps"></div>
+        <div class="status">
+          <i data-lucide="wifi"></i><i data-lucide="volume-2"></i
+          ><span id="dockTime"></span><span id="dockDate"></span>
+        </div>
+      </footer>
+    </div>
+  </body>
+</html>
