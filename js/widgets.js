@@ -3,6 +3,10 @@ export class WidgetManager {
   #cleanups = new Map();
   #context;
 
+  setContext(context) {
+    this.#context = context;
+  }
+
   register(widget) {
     if (!widget?.id || typeof widget.mount !== "function") {
       throw new TypeError("Widget precisa de id e função mount().");
@@ -18,6 +22,15 @@ export class WidgetManager {
     for (const widget of this.#widgets.values()) {
       await this.#mount(widget);
     }
+  }
+
+  async mount(id) {
+    const widget = this.#widgets.get(id);
+    if (widget) await this.#mount(widget);
+  }
+
+  async unmount(id) {
+    await this.#unmount(id);
   }
 
   async refresh(id) {

@@ -19,7 +19,11 @@ export function loadValue(
     const currentValue = localStorage.getItem(key);
     if (currentValue !== null) {
       try {
-        return { value: parseStoredValue(currentValue, validate), warning };
+        return {
+          value: parseStoredValue(currentValue, validate),
+          warning,
+          found: true,
+        };
       } catch {
         warning =
           "Os dados salvos estavam inválidos; valores padrão foram carregados.";
@@ -38,12 +42,14 @@ export function loadValue(
             value,
             warning:
               "Dados existentes foram migrados; a cópia anterior foi preservada.",
+            found: true,
           };
         } catch {
           return {
             value,
             warning:
               "Dados antigos carregados, mas não foi possível concluir a migração.",
+            found: true,
           };
         }
       } catch {
@@ -56,10 +62,11 @@ export function loadValue(
       value: fallback,
       warning:
         "O armazenamento local está indisponível; alterações podem não persistir.",
+      found: false,
     };
   }
 
-  return { value: fallback, warning };
+  return { value: fallback, warning, found: false };
 }
 
 export function saveValue(name, value, validate = () => true) {

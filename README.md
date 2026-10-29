@@ -10,7 +10,7 @@ O projeto é inspirado na experiência de widgets do Android e da Motorola, comb
 
 O Orbe será multiplataforma, com suporte a Linux, Windows, Android e navegadores modernos.
 
-> **Status:** Fases 1 e 2 implementadas; validação multiplataforma pendente  
+> **Status:** Fases 1, 2 e 3 implementadas; validação multiplataforma pendente
 > **Versão:** 0.1.0 em desenvolvimento  
 > **Projeto anterior:** Metro Start  
 > **Hospedagem planejada:** Vercel
@@ -42,7 +42,7 @@ Criar um dashboard pessoal que permita ao usuário organizar e acessar seus recu
 | JavaScript       | Funcionalidades e componentes                               |
 | Node.js          | Agente local opcional                                       |
 | IndexedDB        | Planejado; os dados atuais usam localStorage                |
-| localStorage     | Persistência atual de notas e agenda via `js/storage.js`    |
+| localStorage     | Persistência de notas, agenda e configuração via `js/storage.js` |
 | Service Worker   | Cache local, fallback offline e atualização sob confirmação |
 | Web App Manifest | Instalação PWA                                              |
 | Lucide Icons     | Ícones locais em `js/vendor/lucide.min.js`                  |
@@ -178,14 +178,12 @@ As cores poderão ser modificadas pelo usuário futuramente.
 
 - [x] Criar ciclo de vida modular com montagem e descarte dos widgets essenciais.
 - [x] Persistir preferências de formato de relógio e unidade de temperatura.
-- [ ] Adicionar widgets ao dashboard.
-- [ ] Remover widgets.
-- [ ] Ocultar e exibir widgets.
-- [ ] Arrastar widgets para reorganizar.
-- [ ] Redimensionar widgets.
-- [ ] Salvar posições.
-- [ ] Restaurar layout.
-- [ ] Criar modelos de layout.
+- [x] Adicionar, remover, ocultar e exibir widgets existentes.
+- [x] Reordenar widgets por controles acessíveis.
+- [x] Redimensionar widgets em três tamanhos responsivos.
+- [x] Salvar e restaurar layout, tema, papel de parede e preferências.
+- [x] Personalizar o dashboard com temas e papéis de parede predefinidos.
+- [x] Exportar e importar configurações JSON com validação.
 
 ---
 
@@ -282,7 +280,7 @@ O Orbe utilizará armazenamento local para preservar informações e preferênci
 
 ### Tecnologias
 
-**localStorage:** persistência atual de notas e agenda por meio da camada `js/storage.js`.
+**localStorage:** persistência de notas, agenda e configuração do dashboard por meio da camada `js/storage.js`.
 
 **IndexedDB:** armazenamento estruturado, com maior capacidade para dados e configurações do dashboard.
 
@@ -292,9 +290,8 @@ O Orbe utilizará armazenamento local para preservar informações e preferênci
 - [x] Implementar salvamento automático.
 - [x] Restaurar dados ao iniciar.
 - [x] Migrar dados legados de notas e agenda sem apagar as chaves antigas.
-- [ ] Exportar backup JSON.
-- [ ] Importar backup JSON.
-- [ ] Validar arquivos de backup.
+- [x] Exportar e importar configurações do dashboard em JSON.
+- [x] Validar esquema e tamanho de arquivos importados antes de aplicar.
 - [ ] Restaurar configurações padrão.
 - [x] Tratar falhas de leitura e gravação do armazenamento.
 - [x] Salvar cidade, última previsão e preferências de relógio/unidades localmente.
@@ -375,14 +372,14 @@ Ainda planejados: configuração explícita da Vercel, módulos de aplicativos e
 **Objetivo:** permitir personalização completa do dashboard.
 
 - [x] Criar gerenciador técnico do ciclo de vida dos widgets.
-- [ ] Adicionar e remover widgets.
-- [ ] Reorganizar widgets.
-- [ ] Redimensionar componentes.
+- [x] Adicionar e remover widgets.
+- [x] Reorganizar widgets.
+- [x] Redimensionar componentes.
 - [x] Implementar clima real com seleção de cidade.
 - [x] Implementar calendário mensal integrado aos eventos.
-- [ ] Criar editor de layout.
-- [ ] Salvar disposição dos widgets.
-- [ ] Criar temas e personalização.
+- [x] Criar editor de layout.
+- [x] Salvar disposição dos widgets.
+- [x] Criar temas e personalização.
 
 **Resultado esperado:** dashboard modular e configurável.
 

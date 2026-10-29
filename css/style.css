@@ -1,6 +1,8 @@
 :root {
   --glass: rgba(5, 20, 30, 0.78);
   --border: rgba(255, 255, 255, 0.17);
+  --accent: #168bff;
+  --accent-strong: #0879d0;
 }
 * {
   box-sizing: border-box;
@@ -16,6 +18,34 @@ body {
     linear-gradient(120deg, #031426ac, #071c2899),
     url("https://images.unsplash.com/photo-1470770841072-f978cf4d019e?w=1920&q=85")
       center/cover fixed;
+}
+body[data-theme="violet"] {
+  --glass: rgba(23, 16, 40, 0.8);
+  --border: rgba(215, 190, 255, 0.2);
+  --accent: #b28aff;
+  --accent-strong: #7045ba;
+}
+body[data-theme="forest"] {
+  --glass: rgba(8, 29, 25, 0.82);
+  --border: rgba(170, 230, 190, 0.2);
+  --accent: #68dda0;
+  --accent-strong: #218754;
+}
+body[data-wallpaper="aurora"] {
+  background:
+    radial-gradient(ellipse at 18% 22%, #16796e 0, transparent 38%),
+    radial-gradient(ellipse at 78% 12%, #514389 0, transparent 34%),
+    linear-gradient(135deg, #061625, #10243b 60%, #071b2a) fixed;
+}
+body[data-wallpaper="sunset"] {
+  background:
+    radial-gradient(ellipse at 75% 18%, #d58c59 0, transparent 36%),
+    linear-gradient(145deg, #291a3f, #754454 55%, #19314a) fixed;
+}
+body[data-wallpaper="ocean"] {
+  background:
+    radial-gradient(ellipse at 25% 80%, #087b86 0, transparent 42%),
+    linear-gradient(135deg, #031426, #07516a 55%, #102a49) fixed;
 }
 button,
 input {
@@ -55,7 +85,7 @@ header {
   margin: 0;
 }
 .brand span {
-  color: #168bff;
+  color: var(--accent);
 }
 .brand p {
   font-size: 19px;
@@ -89,13 +119,13 @@ header {
   padding: 10px;
 }
 .avatar {
-  background: #0879d0;
+  background: var(--accent-strong);
   border-radius: 50%;
   padding: 9px;
 }
 .layout {
   display: grid;
-  grid-template-columns: 255px minmax(0, 1fr) 305px;
+  grid-template-columns: 255px minmax(0, 1fr);
   gap: 18px;
 }
 .sidebar {
@@ -120,7 +150,7 @@ header {
 }
 .nav-item.active,
 .nav-item:hover {
-  background: linear-gradient(90deg, #087ce5, #063c7a);
+  background: linear-gradient(90deg, var(--accent-strong), #063c7a);
 }
 .favorites {
   border-top: 1px solid #ffffff2d;
@@ -150,6 +180,27 @@ main,
   flex-direction: column;
   gap: 18px;
   min-width: 0;
+}
+main {
+  display: block;
+}
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  align-items: start;
+  gap: 16px;
+}
+.widget-card {
+  min-width: 0;
+}
+.widget-size-small {
+  grid-column: span 4;
+}
+.widget-size-medium {
+  grid-column: span 6;
+}
+.widget-size-large {
+  grid-column: 1 / -1;
 }
 .topwidgets {
   display: grid;
@@ -401,7 +452,7 @@ h2 {
 .progress > div {
   width: 55%;
   height: 100%;
-  background: #168bff;
+  background: var(--accent);
 }
 .controls {
   display: flex;
@@ -430,7 +481,7 @@ h2 {
   margin: 12px 0;
 }
 .note input {
-  accent-color: #168bff;
+  accent-color: var(--accent);
 }
 .note input:checked + span {
   text-decoration: line-through;
@@ -493,14 +544,20 @@ h2 {
     grid-template-columns: 260px 1fr 200px;
   }
   .layout {
-    grid-template-columns: 210px minmax(0, 1fr) 260px;
+    grid-template-columns: 210px minmax(0, 1fr);
     gap: 12px;
   }
-  .topwidgets {
-    grid-template-columns: 1fr 1fr;
+  .dashboard-grid {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
   }
-  .agenda {
-    grid-column: 1/-1;
+  .widget-size-small {
+    grid-column: span 2;
+  }
+  .widget-size-medium {
+    grid-column: span 3;
+  }
+  .widget-size-large {
+    grid-column: 1 / -1;
   }
   .appgrid {
     grid-template-columns: repeat(4, 1fr);
@@ -515,11 +572,6 @@ h2 {
 @media (max-width: 1050px) {
   .layout {
     grid-template-columns: 190px 1fr;
-  }
-  .right {
-    grid-column: 2;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
   }
   header {
     grid-template-columns: 1fr 1fr;
@@ -552,24 +604,22 @@ h2 {
   .sidebar {
     display: none;
   }
-  main,
-  .right {
+  main {
     margin-bottom: 18px;
   }
-  .topwidgets {
-    grid-template-columns: 1fr;
+  .dashboard-grid {
+    grid-template-columns: minmax(0, 1fr);
   }
-  .agenda {
-    grid-column: auto;
+  .widget-size-small,
+  .widget-size-medium,
+  .widget-size-large {
+    grid-column: 1;
   }
   .appgrid {
     grid-template-columns: repeat(3, 1fr);
   }
   .quickgrid {
     grid-template-columns: repeat(4, 1fr);
-  }
-  .right {
-    display: flex;
   }
   .dock {
     left: 10px;
@@ -864,6 +914,101 @@ h2 {
   color: #c1cedb;
   font-size: 11px;
 }
+.widget-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-width: 0;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+.widget-toolbar-title {
+  color: #c1cedb;
+  font-size: 11px;
+  font-weight: 600;
+}
+.widget-toolbar-actions,
+.widget-catalog-actions,
+.config-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 5px;
+}
+.widget-control,
+.config-actions button {
+  min-height: 30px;
+  padding: 5px 8px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #ffffff10;
+  color: inherit;
+  font-size: 11px;
+}
+.widget-control:hover,
+.widget-control:focus-visible,
+.config-actions button:hover,
+.config-actions button:focus-visible {
+  background: #ffffff25;
+}
+.widget-control:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+.widget-card .widget-control {
+  min-width: 30px;
+}
+.widget-card .widget-control:nth-last-child(-n + 2) {
+  display: none;
+}
+.widget-manager {
+  margin-top: 16px;
+  border-top: 1px solid var(--border);
+  padding-top: 12px;
+}
+.widget-manager summary {
+  cursor: pointer;
+  color: #d5e0eb;
+  font-size: 13px;
+}
+.widget-catalog {
+  display: grid;
+  gap: 8px;
+  margin-top: 10px;
+}
+.widget-catalog-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-width: 0;
+  color: #d5e0eb;
+  font-size: 12px;
+}
+.widget-catalog-row > span {
+  overflow-wrap: anywhere;
+}
+.widget-catalog-actions {
+  flex: 0 0 auto;
+}
+.config-actions {
+  margin-top: 14px;
+}
+.section-head .round,
+.calendar-day.selected {
+  background-color: var(--accent-strong);
+}
+.calendar-day.today {
+  border-color: var(--accent);
+}
+.entry-action:hover,
+.entry-action:focus-visible,
+.icon-button:hover,
+.icon-button:focus-visible {
+  border-color: var(--accent);
+}
 @media (max-width: 700px) {
   .calendar-controls {
     width: 100%;
@@ -888,5 +1033,12 @@ h2 {
     min-width: 12px;
     height: 12px;
     font-size: 8px;
+  }
+  .widget-toolbar {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .widget-toolbar-actions {
+    width: 100%;
   }
 }

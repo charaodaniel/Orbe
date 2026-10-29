@@ -2,7 +2,7 @@
 
 **Objetivo:** levar a base atual do dashboard até uma versão 0.1 estável e, depois, avançar para widgets configuráveis e integração Linux.
 
-**Status:** Fases 1 e 2 implementadas; validação visual em dispositivos reais continua pendente.
+**Status:** Fases 1, 2 e 3 implementadas; validação das fases 1 e 2 em navegadores e dispositivos reais continua pendente.
 
 ## Base já existente
 
@@ -56,16 +56,17 @@
 - [x] Remover indicadores simulados de CPU/RAM e exibir somente dados reais disponíveis.
 - [x] Adicionar preferências persistidas para formato do relógio e unidade de temperatura.
 - [x] Manter a última previsão e permitir conversão de unidade sem conexão.
+- [x] Definir o modelo de dados dos widgets necessário para persistir layouts configuráveis.
 
 **Dependência:** concluir a estratégia de dados da Fase 1 antes de persistir configurações de widgets.
 
 ## Fase 3: personalização do dashboard
 
-- [ ] Criar controles para adicionar, ocultar e remover widgets.
-- [ ] Implementar reordenação e redimensionamento.
-- [ ] Salvar e restaurar disposição, tema e preferências.
-- [ ] Adicionar temas e configuração de papel de parede.
-- [ ] Implementar importação e exportação de configuração com validação.
+- [x] Criar controles para adicionar, ocultar e remover widgets existentes.
+- [x] Implementar reordenação acessível e redimensionamento responsivo.
+- [x] Salvar e restaurar disposição, tema, papel de parede e preferências.
+- [x] Adicionar temas e opções de papel de parede predefinidas.
+- [x] Implementar exportação e importação de configuração com validação de esquema e limite de tamanho.
 
 **Dependência:** definir o modelo de dados dos widgets na Fase 2 antes de salvar layouts configuráveis.
 
