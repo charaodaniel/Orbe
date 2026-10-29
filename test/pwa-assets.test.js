@@ -89,6 +89,10 @@ test("dashboard exposes named controls and responsive breakpoints", async () => 
   assert.match(html, /Gerenciar dock e ícones/);
   assert.match(html, /aria-haspopup="dialog"/);
   assert.match(html, /Personalizar dashboard/);
+  assert.match(html, /id="widgetSettings" hidden/);
+  const script = await readFile(path.join(root, "js/script.js"), "utf8");
+  assert.match(script, /function showCustomizationPanel\(\)/);
+  assert.match(script, /function hideCustomizationPanel\(\)/);
   for (const breakpoint of [700, 1050, 1350]) {
     assert.ok(css.includes(`(max-width: ${breakpoint}px)`));
   }

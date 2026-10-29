@@ -380,6 +380,14 @@ function updatePersonalizationControls() {
   $("dashboardTheme").value = dashboardConfig.theme;
   $("dashboardWallpaper").value = dashboardConfig.wallpaper;
 }
+function showCustomizationPanel() {
+  const panel = $("widgetSettings");
+  panel.hidden = false;
+  panel.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+function hideCustomizationPanel() {
+  $("widgetSettings").hidden = true;
+}
 function getAppById(id) {
   return apps.find((app) => app[4] === id);
 }
@@ -694,15 +702,18 @@ function renderNav() {
         .querySelectorAll("button")
         .forEach((x) => x.classList.remove("active"));
       b.classList.add("active");
+      if (a[0] === "Configurações") {
+        showCustomizationPanel();
+        return;
+      }
+      hideCustomizationPanel();
       (a[0] === "Início"
         ? $("dashboardGrid")
         : a[0] === "Multimídia"
           ? $("mediaWidget")
-          : a[0] === "Configurações"
-            ? $("widgetSettings")
-            : a[0] === "Arquivos"
-              ? $("quickPanel")
-              : $("appsPanel")
+          : a[0] === "Arquivos"
+            ? $("quickPanel")
+            : $("appsPanel")
       ).scrollIntoView({ behavior: "smooth" });
     };
     root.append(b);
@@ -924,7 +935,7 @@ async function importDashboardConfig(file) {
       defaultDashboardConfig,
     );
     if (commitDashboardConfig(migratedConfig, "Configuração importada.")) {
-      $("widgetSettings").scrollIntoView({ behavior: "smooth" });
+      showCustomizationPanel();
     }
   } catch {
     notify("Não foi possível ler o arquivo de configuração.", true);
@@ -1061,14 +1072,12 @@ function initialize() {
   });
   $("openDashboard").addEventListener("click", () => {
     profileDialog.close();
+    hideCustomizationPanel();
     window.scrollTo({ top: 0, behavior: "smooth" });
   });
   $("openDashboardCustomization").addEventListener("click", () => {
     profileDialog.close();
-    $("widgetSettings").scrollIntoView({
-      behavior: "smooth",
-      block: "start",
-    });
+    showCustomizationPanel();
   });
   let playing = false;
   $("play").onclick = () => {

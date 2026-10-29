@@ -551,7 +551,7 @@ A proposta atual é criar um ambiente digital pessoal, personalizável e multipl
 ### Base existente
 
 - Dashboard responsivo com pesquisa, menu, dock e painéis de aplicativos.
-- Perfil abre um modal com acesso rápido ao dashboard e às opções de personalização.
+- Perfil abre um modal com acesso ao dashboard e às opções de personalização; o painel de personalização fica oculto até ser solicitado.
 - Relógio circular com data e horário.
 - Agenda e notas com criação, edição, remoção e persistência local.
 - Migração das chaves antigas `metro-start-*` sem apagar os dados de origem.
