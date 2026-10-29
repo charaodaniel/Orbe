@@ -6,6 +6,7 @@ import { loadValue, saveValue } from "./storage.js";
 import {
   isDashboardConfig,
   migrateDashboardConfig,
+  reorderSubset,
 } from "./dashboard-config.js";
 import { calendarWidget } from "./calendar.js";
 import { weatherWidget } from "./weather.js";
@@ -236,12 +237,12 @@ const preferencesState = loadValue(
   isPreferences,
 );
 const defaultDashboardConfig = {
-  schemaVersion: 2,
+  schemaVersion: 3,
   order: [...widgetIds],
   widgets: Object.fromEntries(
-    widgetDefinitions.map(({ id, defaultSize }) => [
+    widgetDefinitions.map(({ id, label, defaultSize }) => [
       id,
-      { included: true, visible: true, size: defaultSize },
+      { included: true, visible: true, size: defaultSize, label },
     ]),
   ),
   theme: "ocean",
@@ -255,6 +256,7 @@ const defaultDashboardConfig = {
         {
           visible: defaultDockAppIds.includes(app[4]),
           icon: app[1],
+          label: app[0],
         },
       ]),
     ),
@@ -276,7 +278,7 @@ const dashboardState = loadValue(
   isValidDashboardConfig,
 );
 const dashboardNeedsMigration =
-  dashboardState.found && dashboardState.value.schemaVersion === 1;
+  dashboardState.found && dashboardState.value.schemaVersion < 3;
 let dashboardConfig = dashboardState.found
   ? migrateDashboardConfig(dashboardState.value, defaultDashboardConfig)
   : {
@@ -345,6 +347,7 @@ function configWithChanges(change) {
 function commitDashboardConfig(nextConfig, message) {
   if (!persist("dashboard-config", nextConfig, isValidDashboardConfig)) {
     updatePersonalizationControls();
+    renderWidgetCatalog();
     renderDockCatalog();
     renderDock();
     return false;
@@ -362,9 +365,18 @@ function commitDashboardConfig(nextConfig, message) {
   const preferencesChanged =
     nextConfig.preferences.clockFormat !== preferences.clockFormat ||
     nextConfig.preferences.temperatureUnit !== preferences.temperatureUnit;
+  const appPresentationChanged = appIds.some(
+    (id) =>
+      dashboardConfig.dock.apps[id].label !== nextConfig.dock.apps[id].label ||
+      dashboardConfig.dock.apps[id].icon !== nextConfig.dock.apps[id].icon,
+  );
   dashboardConfig = nextConfig;
   Object.assign(preferences, nextConfig.preferences);
   applyDashboardConfig();
+  if (appPresentationChanged) {
+    renderApps($("search").value);
+    renderFavorites();
+  }
   if (lifecycleChanged) {
     syncWidgetLifecycles().catch((error) => notify(error.message, true));
   }
@@ -391,6 +403,18 @@ function hideCustomizationPanel() {
 function getAppById(id) {
   return apps.find((app) => app[4] === id);
 }
+function getAppLabel(id) {
+  return dashboardConfig.dock.apps[id]?.label || getAppById(id)[0];
+}
+function getAppIcon(id) {
+  return dashboardConfig.dock.apps[id]?.icon || getAppById(id)[1];
+}
+function getWidgetLabel(id) {
+  return (
+    dashboardConfig.widgets[id]?.label ||
+    widgetDefinitions.find((widget) => widget.id === id).label
+  );
+}
 function makeControlButton(label, text, onClick) {
   const button = element("button", "widget-control", text);
   button.type = "button";
@@ -407,23 +431,40 @@ function renderWidgetCatalog() {
     const definition = widgetDefinitions.find((widget) => widget.id === id);
     const state = dashboardConfig.widgets[id];
     const row = element("div", "widget-catalog-row");
-    row.append(element("span", "", definition.label));
+    const labelInput = element("input", "widget-label-input");
+    labelInput.type = "text";
+    labelInput.value = state.label;
+    labelInput.maxLength = 32;
+    labelInput.setAttribute(
+      "aria-label",
+      `Nome do widget ${getWidgetLabel(id)}`,
+    );
+    labelInput.addEventListener("change", () => {
+      const label = labelInput.value.trim();
+      if (!label) {
+        notify("O nome do widget não pode ficar vazio.");
+        labelInput.value = state.label;
+        return;
+      }
+      changeWidget(id, { label });
+    });
+    row.append(labelInput);
     const actions = element("div", "widget-catalog-actions");
 
     if (!state.included) {
       actions.append(
-        makeControlButton(`Adicionar ${definition.label}`, "Adicionar", () =>
+        makeControlButton(`Adicionar ${getWidgetLabel(id)}`, "Adicionar", () =>
           changeWidget(id, { included: true, visible: true }),
         ),
       );
     } else {
       actions.append(
         makeControlButton(
-          `${state.visible ? "Ocultar" : "Mostrar"} ${definition.label}`,
+          `${state.visible ? "Ocultar" : "Mostrar"} ${getWidgetLabel(id)}`,
           state.visible ? "Ocultar" : "Mostrar",
           () => changeWidget(id, { visible: !state.visible }),
         ),
-        makeControlButton(`Remover ${definition.label}`, "Remover", () =>
+        makeControlButton(`Remover ${getWidgetLabel(id)}`, "Remover", () =>
           changeWidget(id, { included: false, visible: false }),
         ),
       );
@@ -440,9 +481,22 @@ function renderDockCatalog() {
     const app = getAppById(id);
     const state = dashboardConfig.dock.apps[id];
     const row = element("div", "dock-catalog-row");
-    const appLabel = element("span", "dock-catalog-app", app[0]);
+    const appLabel = element("input", "dock-catalog-app");
+    appLabel.type = "text";
+    appLabel.value = state.label;
+    appLabel.maxLength = 32;
+    appLabel.setAttribute("aria-label", `Nome do aplicativo ${state.label}`);
+    appLabel.addEventListener("change", () => {
+      const label = appLabel.value.trim();
+      if (!label) {
+        notify("O nome do aplicativo não pode ficar vazio.");
+        appLabel.value = state.label;
+        return;
+      }
+      updateDockApp(id, { label });
+    });
     const iconSelect = element("select", "dock-icon-select");
-    iconSelect.setAttribute("aria-label", `Ícone de ${app[0]}`);
+    iconSelect.setAttribute("aria-label", `Ícone de ${state.label}`);
     dockIconOptions.forEach(([iconName, label]) => {
       const option = element("option", "", label);
       option.value = iconName;
@@ -457,13 +511,13 @@ function renderDockCatalog() {
     );
     const visiblePosition = visibleApps.indexOf(id);
     const moveUp = makeControlButton(
-      `Mover ${app[0]} para a esquerda`,
+      `Mover ${state.label} para a esquerda`,
       "←",
       () => moveDockApp(id, -1),
     );
     moveUp.disabled = !state.visible || visiblePosition === 0;
     const moveDown = makeControlButton(
-      `Mover ${app[0]} para a direita`,
+      `Mover ${state.label} para a direita`,
       "→",
       () => moveDockApp(id, 1),
     );
@@ -473,7 +527,7 @@ function renderDockCatalog() {
       moveUp,
       moveDown,
       makeControlButton(
-        `${state.visible ? "Remover" : "Adicionar"} ${app[0]} ${state.visible ? "da" : "à"} dock`,
+        `${state.visible ? "Remover" : "Adicionar"} ${state.label} ${state.visible ? "da" : "à"} dock`,
         state.visible ? "Remover" : "Adicionar",
         () => updateDockApp(id, { visible: !state.visible }),
       ),
@@ -489,29 +543,36 @@ function updateDockApp(id, changes) {
   commitDashboardConfig(nextConfig, "Dock atualizada.");
 }
 function moveDockApp(id, direction) {
+  const visibleIds = dashboardConfig.dock.order.filter(
+    (appId) => dashboardConfig.dock.apps[appId].visible,
+  );
+  const position = visibleIds.indexOf(id);
+  const targetId = visibleIds[position + direction];
+  if (!targetId) return;
   const nextConfig = configWithChanges((next) => {
-    const positions = next.dock.order
-      .map((appId, index) => (next.dock.apps[appId].visible ? index : -1))
-      .filter((index) => index >= 0);
-    const visibleIds = positions.map((index) => next.dock.order[index]);
-    const visiblePosition = visibleIds.indexOf(id);
-    const targetPosition = visiblePosition + direction;
-    if (
-      visiblePosition < 0 ||
-      targetPosition < 0 ||
-      targetPosition >= visibleIds.length
-    ) {
-      return;
-    }
-
-    const currentIndex = positions[visiblePosition];
-    const targetIndex = positions[targetPosition];
-    [next.dock.order[currentIndex], next.dock.order[targetIndex]] = [
-      next.dock.order[targetIndex],
-      next.dock.order[currentIndex],
-    ];
+    next.dock.order =
+      reorderSubset(
+        next.dock.order,
+        (appId) => next.dock.apps[appId].visible,
+        id,
+        targetId,
+        direction > 0,
+      ) || next.dock.order;
   });
   commitDashboardConfig(nextConfig, "Ordem da dock atualizada.");
+}
+function reorderWidgets(sourceId, targetId, after = false) {
+  const nextConfig = configWithChanges((next) => {
+    next.order =
+      reorderSubset(
+        next.order,
+        (id) => next.widgets[id].included,
+        sourceId,
+        targetId,
+        after,
+      ) || next.order;
+  });
+  commitDashboardConfig(nextConfig, "Ordem dos widgets atualizada.");
 }
 function changeWidget(id, changes) {
   const nextConfig = configWithChanges((next) => {
@@ -535,6 +596,32 @@ function moveWidget(id, direction) {
     ];
   });
   commitDashboardConfig(nextConfig, "Ordem dos widgets atualizada.");
+}
+function setWidgetHeading(id, label) {
+  const widgetElement = widgetElements.get(id);
+  const selectors = {
+    weather: ".weather-label",
+    clock: null,
+    agenda: ".section-head h2",
+    calendar: ".calendar-heading h2",
+    apps: ".section-head h2",
+    quick: ".section-head h2",
+    system: "h2",
+    media: "h2",
+    notes: ".section-head h2",
+  };
+  const heading = selectors[id]
+    ? widgetElement.querySelector(selectors[id])
+    : null;
+  if (!heading) return;
+  const textNode = [...heading.childNodes].find(
+    (node) => node.nodeType === Node.TEXT_NODE && node.textContent.trim(),
+  );
+  if (textNode) {
+    textNode.textContent = ` ${label}`;
+  } else {
+    heading.append(document.createTextNode(label));
+  }
 }
 function resizeWidget(id, direction) {
   const sizes = ["small", "medium", "large"];
@@ -563,43 +650,80 @@ function addWidgetToolbar(definition, elementNode) {
     element(
       "span",
       "widget-toolbar-title",
-      `${definition.label} · ${sizeLabels[state.size]}`,
+      `${state.label} · ${sizeLabels[state.size]}`,
     ),
   );
   const controls = element("div", "widget-toolbar-actions");
+  const dragHandle = makeControlButton(
+    `Arrastar ${state.label} para reorganizar`,
+    "⠿",
+    () => {},
+  );
+  dragHandle.classList.add("widget-drag-handle");
+  dragHandle.draggable = true;
+  dragHandle.addEventListener("dragstart", (event) => {
+    event.dataTransfer?.setData("text/plain", definition.id);
+    if (event.dataTransfer) event.dataTransfer.effectAllowed = "move";
+    elementNode.classList.add("is-dragging");
+  });
+  dragHandle.addEventListener("dragend", () =>
+    elementNode.classList.remove("is-dragging"),
+  );
+  elementNode.ondragover = (event) => {
+    if (!Array.from(event.dataTransfer?.types || []).includes("text/plain")) {
+      return;
+    }
+    event.preventDefault();
+    event.dataTransfer.dropEffect = "move";
+    elementNode.classList.add("is-drop-target");
+  };
+  elementNode.ondragleave = (event) => {
+    if (!elementNode.contains(event.relatedTarget)) {
+      elementNode.classList.remove("is-drop-target");
+    }
+  };
+  elementNode.ondrop = (event) => {
+    event.preventDefault();
+    elementNode.classList.remove("is-drop-target");
+    const sourceId = event.dataTransfer?.getData("text/plain");
+    if (!sourceId || sourceId === definition.id) return;
+    const bounds = elementNode.getBoundingClientRect();
+    reorderWidgets(sourceId, definition.id, event.clientY > bounds.top + bounds.height / 2);
+  };
   const moveUp = makeControlButton(
-    `Mover ${definition.label} para cima`,
+    `Mover ${state.label} para cima`,
     "↑",
     () => moveWidget(definition.id, -1),
   );
   moveUp.disabled = position === 0;
   const moveDown = makeControlButton(
-    `Mover ${definition.label} para baixo`,
+    `Mover ${state.label} para baixo`,
     "↓",
     () => moveWidget(definition.id, 1),
   );
   moveDown.disabled = position === included.length - 1;
   const resizeDown = makeControlButton(
-    `Diminuir ${definition.label}`,
+    `Diminuir ${state.label}`,
     "−",
     () => resizeWidget(definition.id, -1),
   );
   resizeDown.disabled = sizeIndex === 0;
   const resizeUp = makeControlButton(
-    `Aumentar ${definition.label}`,
+    `Aumentar ${state.label}`,
     "+",
     () => resizeWidget(definition.id, 1),
   );
   resizeUp.disabled = sizeIndex === 2;
   controls.append(
+    dragHandle,
     moveUp,
     moveDown,
     resizeDown,
     resizeUp,
-    makeControlButton(`Ocultar ${definition.label}`, "Ocultar", () =>
+    makeControlButton(`Ocultar ${state.label}`, "Ocultar", () =>
       changeWidget(definition.id, { visible: false }),
     ),
-    makeControlButton(`Remover ${definition.label}`, "Remover", () =>
+    makeControlButton(`Remover ${state.label}`, "Remover", () =>
       changeWidget(definition.id, { included: false, visible: false }),
     ),
   );
@@ -627,6 +751,7 @@ function applyDashboardConfig() {
     const definition = widgetDefinitions.find((widget) => widget.id === id);
     const widgetElement = widgetElements.get(id);
     widgetElement.hidden = !state.visible;
+    setWidgetHeading(id, state.label);
     addWidgetToolbar(definition, widgetElement);
     grid.append(widgetElement);
   });
@@ -656,23 +781,26 @@ function syncWidgetLifecycles() {
 }
 function launch(app) {
   if (app[3]) window.open(app[3], "_blank", "noopener,noreferrer");
-  else if (app[0] === "Notas")
+  else if (app[4] === "notes")
     $("notesWidget").scrollIntoView({ behavior: "smooth" });
-  else alert(`${app[0]}: integração ainda não configurada.`);
+  else alert(`${getAppLabel(app[4])}: integração ainda não configurada.`);
 }
 // 03. Aplicativos e atalhos
 function renderApps(filter = "") {
   const root = $("apps");
   root.replaceChildren();
   const filteredApps = apps.filter((app) =>
-    app[0].toLowerCase().includes(filter.toLowerCase()),
+    getAppLabel(app[4]).toLowerCase().includes(filter.toLowerCase()),
   );
   if (filteredApps.length === 0) {
     root.append(element("p", "empty-state", "Nenhum aplicativo encontrado."));
   } else {
     filteredApps.forEach((app) => {
       const button = element("button", `app ${app[2]}`);
-      button.append(icon(app[1]), element("span", "", app[0]));
+      button.append(
+        icon(getAppIcon(app[4])),
+        element("span", "", getAppLabel(app[4])),
+      );
       button.onclick = () => launch(app);
       root.append(button);
     });
@@ -694,6 +822,7 @@ function renderQuick() {
 }
 function renderNav() {
   const root = $("nav");
+  root.replaceChildren();
   nav.forEach((a, i) => {
     const b = element("button", `nav-item ${i === 0 ? "active" : ""}`);
     b.append(icon(a[1]), element("span", "", a[0]));
@@ -718,10 +847,18 @@ function renderNav() {
     };
     root.append(b);
   });
+  renderFavorites();
+  icons();
+}
+function renderFavorites() {
   const fav = $("favorites");
+  fav.replaceChildren();
   apps.slice(0, 6).forEach((a) => {
     const b = element("button", "favorite");
-    b.append(icon(a[1]), element("span", "", a[0]));
+    b.append(
+      icon(getAppIcon(a[4])),
+      element("span", "", getAppLabel(a[4])),
+    );
     b.onclick = () => launch(a);
     fav.append(b);
   });
@@ -890,10 +1027,48 @@ function renderDock() {
     const app = getAppById(id);
     const button = element("button", "dock-app");
     button.type = "button";
-    button.title = app[0];
-    button.setAttribute("aria-label", app[0]);
+    button.title = state.label;
+    button.setAttribute("aria-label", state.label);
     button.append(icon(state.icon));
     button.onclick = () => launch(app);
+    button.draggable = true;
+    button.addEventListener("dragstart", (event) => {
+      event.dataTransfer?.setData("text/plain", id);
+      if (event.dataTransfer) event.dataTransfer.effectAllowed = "move";
+      button.classList.add("is-dragging");
+    });
+    button.addEventListener("dragend", () =>
+      button.classList.remove("is-dragging"),
+    );
+    button.addEventListener("dragover", (event) => {
+      if (!Array.from(event.dataTransfer?.types || []).includes("text/plain")) {
+        return;
+      }
+      event.preventDefault();
+      event.dataTransfer.dropEffect = "move";
+      button.classList.add("is-drop-target");
+    });
+    button.addEventListener("dragleave", () =>
+      button.classList.remove("is-drop-target"),
+    );
+    button.addEventListener("drop", (event) => {
+      event.preventDefault();
+      button.classList.remove("is-drop-target");
+      const sourceId = event.dataTransfer?.getData("text/plain");
+      if (!sourceId || sourceId === id) return;
+      const bounds = button.getBoundingClientRect();
+      const nextConfig = configWithChanges((next) => {
+        next.dock.order =
+          reorderSubset(
+            next.dock.order,
+            (appId) => next.dock.apps[appId].visible,
+            sourceId,
+            id,
+            event.clientX > bounds.left + bounds.width / 2,
+          ) || next.dock.order;
+      });
+      commitDashboardConfig(nextConfig, "Ordem da dock atualizada.");
+    });
     root.append(button);
   });
   icons();

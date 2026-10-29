@@ -93,6 +93,10 @@ test("dashboard exposes named controls and responsive breakpoints", async () => 
   const script = await readFile(path.join(root, "js/script.js"), "utf8");
   assert.match(script, /function showCustomizationPanel\(\)/);
   assert.match(script, /function hideCustomizationPanel\(\)/);
+  assert.match(script, /dragHandle\.draggable = true/);
+  assert.match(script, /button\.draggable = true/);
+  assert.match(script, /Nome do widget/);
+  assert.match(script, /Nome do aplicativo/);
   for (const breakpoint of [700, 1050, 1350]) {
     assert.ok(css.includes(`(max-width: ${breakpoint}px)`));
   }

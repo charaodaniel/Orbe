@@ -21,10 +21,9 @@
 ## Fase 3: personalização do dashboard
 
 - [x] Permitir adicionar e remover atalhos da dock.
-- [x] Permitir reordenar atalhos e configurar sua visibilidade na dock.
-- [x] Permitir selecionar e personalizar os ícones dos atalhos usando opções locais.
-- [x] Persistir as configurações da dock e dos ícones junto à configuração do dashboard.
-- [x] Incluir dock e ícones na importação/exportação de configurações, com validação dos dados e migração de configurações anteriores.
+- [x] Reordenar atalhos e widgets por arrastar e soltar, mantendo controles acessíveis por teclado.
+- [x] Editar nomes e ícones dos atalhos, e nomes, tamanho e visibilidade dos widgets.
+- [x] Persistir preferências e incluí-las na importação/exportação, com validação e migração de configurações anteriores.
 
 ## Fase 4: validação do agente Linux
 

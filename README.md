@@ -115,13 +115,13 @@ As cores poderão ser modificadas pelo usuário futuramente.
 ## 4.2. Gerenciamento de aplicativos
 
 - [ ] Adicionar atalhos para sites.
-- [ ] Editar nome, URL e ícone.
+- [x] Editar nome e ícone dos aplicativos fixados na dock.
+- [ ] Editar URL e cadastrar novos atalhos para sites.
 - [ ] Buscar favicon automaticamente.
 - [ ] Organizar aplicativos por categorias.
 - [x] Implementar pesquisa de aplicativos.
-- [ ] Fixar aplicativos no dock.
-- [ ] Remover aplicativos do dock.
-- [ ] Reorganizar atalhos por arrastar e soltar.
+- [x] Fixar e remover aplicativos predefinidos da dock.
+- [x] Reorganizar atalhos da dock por arrastar e soltar.
 - [ ] Importar e exportar aplicativos em JSON.
 - [x] Abrir links configurados em nova aba.
 
@@ -556,7 +556,7 @@ A proposta atual é criar um ambiente digital pessoal, personalizável e multipl
 - Agenda e notas com criação, edição, remoção e persistência local.
 - Migração das chaves antigas `metro-start-*` sem apagar os dados de origem.
 - Manifesto, ícones, cache offline e atualização confirmada do Service Worker.
-- Gerenciamento da dock: adicionar/remover apps, reordenar atalhos e escolher ícones Lucide locais; preferências são persistidas e exportadas.
+- Gerenciamento da dock e dos widgets: organizar por arrastar ou controles acessíveis, editar nomes e ícones Lucide dos apps e nomes/tamanhos/visibilidade dos widgets; alterações são persistidas e exportadas.
 - Indicador de conexão e previsão do tempo obtida via Open-Meteo.
 - Informações do sistema limitadas ao navegador, ou métricas agregadas via agente Linux opcional.
 - Agente Linux local autorizado por token, com descoberta e abertura de aplicativos instalados por identificador.

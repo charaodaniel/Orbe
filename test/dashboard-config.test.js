@@ -25,24 +25,42 @@ const options = {
   dockIconNames: ["globe", "notebook-pen", "star"],
 };
 
-function createConfig(schemaVersion = 2) {
+function createConfig(schemaVersion = 3) {
   const config = {
     schemaVersion,
     order: ["clock", "apps"],
     widgets: {
-      clock: { included: true, visible: true, size: "small" },
-      apps: { included: true, visible: false, size: "large" },
+      clock: {
+        included: true,
+        visible: true,
+        size: "small",
+        ...(schemaVersion === 3 ? { label: "Relógio" } : {}),
+      },
+      apps: {
+        included: true,
+        visible: false,
+        size: "large",
+        ...(schemaVersion === 3 ? { label: "Aplicativos" } : {}),
+      },
     },
     theme: "ocean",
     wallpaper: "landscape",
     preferences: { clockFormat: "24", temperatureUnit: "celsius" },
   };
-  if (schemaVersion === 2) {
+  if (schemaVersion >= 2) {
     config.dock = {
       order: ["browser", "notes"],
       apps: {
-        browser: { visible: true, icon: "globe" },
-        notes: { visible: false, icon: "notebook-pen" },
+        browser: {
+          visible: true,
+          icon: "globe",
+          ...(schemaVersion === 3 ? { label: "Navegador" } : {}),
+        },
+        notes: {
+          visible: false,
+          icon: "notebook-pen",
+          ...(schemaVersion === 3 ? { label: "Notas" } : {}),
+        },
       },
     };
   }
@@ -53,15 +71,16 @@ test("legacy dashboard settings validate and migrate while preserving preference
   const { isDashboardConfig, migrateDashboardConfig } =
     await loadConfigModule();
   const legacy = createConfig(1);
-  const defaults = createConfig(2);
+  const defaults = createConfig(3);
 
   assert.equal(isDashboardConfig(legacy, options), true);
   const migrated = migrateDashboardConfig(legacy, defaults);
-  assert.equal(migrated.schemaVersion, 2);
+  assert.equal(migrated.schemaVersion, 3);
   assert.equal(migrated.theme, legacy.theme);
   assert.deepEqual(migrated.order, legacy.order);
   assert.deepEqual(migrated.dock, defaults.dock);
   assert.notEqual(migrated.dock.apps.browser, defaults.dock.apps.browser);
+  assert.equal(migrated.widgets.clock.label, "Relógio");
 });
 
 test("dock configuration validates app visibility, ordering, and local icons", async () => {
@@ -75,4 +94,53 @@ test("dock configuration validates app visibility, ordering, and local icons", a
   const invalidIcon = createConfig();
   invalidIcon.dock.apps.notes.icon = "https://example.com/icon.svg";
   assert.equal(isDashboardConfig(invalidIcon, options), false);
+
+  const invalidLabel = createConfig();
+  invalidLabel.widgets.apps.label = "  ";
+  assert.equal(isDashboardConfig(invalidLabel, options), false);
+});
+
+test("schema version 2 migrates editable labels without losing dock preferences", async () => {
+  const { isDashboardConfig, migrateDashboardConfig } =
+    await loadConfigModule();
+  const previous = createConfig(2);
+  previous.dock.order.reverse();
+  previous.dock.apps.browser.icon = "star";
+  const migrated = migrateDashboardConfig(previous, createConfig(3));
+
+  assert.equal(isDashboardConfig(previous, options), true);
+  assert.equal(migrated.schemaVersion, 3);
+  assert.deepEqual(migrated.dock.order, ["notes", "browser"]);
+  assert.equal(migrated.dock.apps.browser.icon, "star");
+  assert.equal(migrated.dock.apps.browser.label, "Navegador");
+  assert.equal(migrated.widgets.clock.label, "Relógio");
+});
+
+test("drag ordering moves visible items without displacing hidden entries", async () => {
+  const { reorderSubset } = await loadConfigModule();
+  const order = ["browser", "hidden-app", "notes", "terminal"];
+  const moved = reorderSubset(
+    order,
+    (id) => id !== "hidden-app",
+    "terminal",
+    "browser",
+    false,
+  );
+  assert.deepEqual(moved, ["terminal", "hidden-app", "browser", "notes"]);
+
+  const widgets = ["clock", "hidden-widget", "weather", "notes"];
+  assert.deepEqual(
+    reorderSubset(
+      widgets,
+      (id) => id !== "hidden-widget",
+      "clock",
+      "weather",
+      true,
+    ),
+    ["weather", "hidden-widget", "clock", "notes"],
+  );
+  assert.equal(
+    reorderSubset(order, (id) => id !== "hidden-app", "unknown", "browser", false),
+    null,
+  );
 });
