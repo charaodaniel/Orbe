@@ -233,6 +233,34 @@
                 hidden
               />
             </div>
+            <section id="linuxAgentControls" class="linux-agent-settings" hidden>
+              <h3>Agente Linux</h3>
+              <label for="linuxAgentToken">Token de autorização da sessão</label>
+              <div class="linux-agent-connect">
+                <input
+                  id="linuxAgentToken"
+                  type="password"
+                  minlength="32"
+                  maxlength="256"
+                  autocomplete="off"
+                  spellcheck="false"
+                  aria-describedby="linuxAgentMessage"
+                />
+                <button id="linuxAgentConnect" type="button">Autorizar</button>
+                <button id="linuxAgentRevoke" type="button" hidden>
+                  Revogar
+                </button>
+              </div>
+              <p
+                id="linuxAgentMessage"
+                role="status"
+                aria-live="polite"
+              ></p>
+              <div id="linuxApplications" hidden>
+                <h4>Aplicativos instalados</h4>
+                <ul id="linuxApplicationList"></ul>
+              </div>
+            </section>
           </section>
           <section class="panel glass" id="systemPanel">
             <h2><i data-lucide="monitor"></i> Sistema</h2>
@@ -246,16 +274,27 @@
                 <dd id="systemCompute">Consultando…</dd>
               </div>
               <div>
-                <dt>Uso de CPU/RAM</dt>
-                <dd id="systemMemory">Protegido pelo navegador</dd>
+                <dt>Carga média da CPU (1 min)</dt>
+                <dd id="systemMemory">Conecte o agente Linux para consultar</dd>
               </div>
               <div>
                 <dt>Armazenamento deste site</dt>
                 <dd id="systemStorage">Consultando…</dd>
               </div>
             </dl>
-            <p class="system-note">
-              O navegador não fornece uso real de CPU ou RAM. O armazenamento
+            <dl id="systemAgentMetrics" class="system-details" hidden>
+              <div>
+                <dt>CPU</dt>
+                <dd id="systemAgentCpu">Indisponível</dd>
+              </div>
+              <div>
+                <dt>Memória livre</dt>
+                <dd id="systemAgentMemory">Indisponível</dd>
+              </div>
+            </dl>
+            <p id="systemNote" class="system-note">
+              O navegador não fornece métricas do sistema; conecte o agente
+              Linux para consultar carga média e memória livre. O armazenamento
               exibido é apenas deste site.
             </p>
           </section>

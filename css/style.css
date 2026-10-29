@@ -996,6 +996,98 @@ h2 {
 .config-actions {
   margin-top: 14px;
 }
+.linux-agent-settings {
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+}
+.linux-agent-settings h3,
+.linux-agent-settings h4 {
+  margin: 0 0 10px;
+  font-size: 13px;
+  font-weight: 500;
+}
+.linux-agent-settings label,
+#linuxAgentMessage {
+  color: #b4c1cf;
+  font-size: 11px;
+}
+.linux-agent-connect {
+  display: flex;
+  gap: 6px;
+  margin-top: 6px;
+}
+.linux-agent-connect input {
+  flex: 1;
+  min-width: 0;
+  padding: 7px 9px;
+  color: white;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #061625d9;
+}
+.linux-agent-connect button,
+.linux-app-button {
+  padding: 7px 9px;
+  color: inherit;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #ffffff10;
+}
+#linuxAgentMessage {
+  margin: 8px 0;
+}
+#linuxAgentMessage[data-persistent="true"] {
+  color: #ffe08a;
+}
+#linuxApplicationList {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+#linuxApplicationList li {
+  display: grid;
+  gap: 3px;
+}
+.linux-app-button {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  text-align: left;
+}
+.linux-app-button img,
+.linux-app-icon {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  flex: 0 0 28px;
+  object-fit: contain;
+  border-radius: 6px;
+  background: #ffffff14;
+}
+.linux-app-icon {
+  color: #d5e0eb;
+  font-size: 13px;
+  font-weight: 600;
+}
+#linuxApplicationList .linux-app-button img[hidden],
+#linuxApplicationList .linux-app-icon[hidden] {
+  display: none;
+}
+#linuxApplicationList span,
+#linuxApplicationList small {
+  color: #b4c1cf;
+  font-size: 10px;
+}
+.linux-agent-connect button:disabled,
+.linux-app-button:disabled {
+  cursor: wait;
+  opacity: 0.6;
+}
 .section-head .round,
 .calendar-day.selected {
   background-color: var(--accent-strong);

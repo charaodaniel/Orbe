@@ -10,7 +10,7 @@ O projeto é inspirado na experiência de widgets do Android e da Motorola, comb
 
 O Orbe será multiplataforma, com suporte a Linux, Windows, Android e navegadores modernos.
 
-> **Status:** Fases 1, 2 e 3 implementadas; validação multiplataforma pendente
+> **Status:** Fases 1 a 4 implementadas; validação em navegadores e desktop Linux pendente
 > **Versão:** 0.1.0 em desenvolvimento  
 > **Projeto anterior:** Metro Start  
 > **Hospedagem planejada:** Vercel
@@ -156,13 +156,12 @@ As cores poderão ser modificadas pelo usuário futuramente.
 ### Sistema
 
 - [x] Exibir informações básicas do ambiente disponíveis ao navegador.
-- [ ] Monitorar CPU pelo agente Linux.
-- [ ] Monitorar memória RAM.
+- [x] Exibir carga média da CPU e memória livre via agente Linux autorizado.
 - [ ] Exibir armazenamento livre do dispositivo.
 - [x] Identificar a plataforma reportada pelo navegador.
 - [x] Detectar conexão com o agente local.
 
-> O navegador informa núcleos lógicos e a quota deste site, mas não expõe uso real de CPU/RAM nem armazenamento livre do dispositivo. Esses valores não são simulados.
+> Sem o agente, o navegador informa apenas núcleos lógicos e a quota deste site. Com autorização explícita no agente Linux, o Orbe exibe carga média e memória livre agregadas; não coleta processos nem armazenamento livre do dispositivo.
 
 ### Outros widgets
 
@@ -218,25 +217,28 @@ O Orbe é desenvolvido como um PWA instalável; a validação de instalação po
 
 # 6. Integração com Linux
 
-O Orbe terá um agente local opcional desenvolvido em Node.js.
+O Orbe possui um agente local opcional desenvolvido em Node.js. A lista de
+aplicativos e as métricas ficam indisponíveis até o usuário informar o token de
+pareamento mostrado no terminal do agente.
 
-O agente será responsável pelas funcionalidades que não podem ser executadas diretamente pelo navegador.
+O agente é limitado ao loopback, valida a origem da PWA, autentica cada
+operação, lê entradas `.desktop` instaladas e inicia aplicativos somente por
+IDs conhecidos com `gtk-launch`. O token permanece em memória na sessão atual
+do navegador e pode ser revogado pela interface.
 
-## Recursos planejados
+## Recursos implementados
 
 - [x] Criar servidor local Node.js com endpoint de diagnóstico.
-- [ ] Detectar aplicativos instalados.
-- [ ] Ler arquivos `.desktop`.
-- [ ] Obter nomes dos aplicativos.
-- [ ] Obter ícones.
-- [ ] Identificar categorias.
-- [ ] Listar aplicativos no Orbe.
-- [ ] Abrir aplicativos com `gtk-launch`.
-- [ ] Consultar informações do sistema.
+- [x] Detectar aplicativos instalados a partir de arquivos `.desktop`.
+- [x] Validar entradas `.desktop` e não expor caminhos nem comandos à PWA.
+- [x] Listar nomes, ícones e categorias disponíveis no Orbe.
+- [x] Abrir aplicativos instalados por identificadores permitidos com `gtk-launch`.
+- [x] Consultar carga média da CPU e memória livre após autorização.
 - [x] Detectar disponibilidade do agente.
-- [ ] Proteger endpoints locais.
-- [ ] Restringir comandos executáveis.
-- [ ] Implementar autorização entre PWA e agente.
+- [x] Proteger endpoints locais com loopback, CORS explícito e token aleatório.
+- [x] Restringir operações a rotas e IDs de aplicativos permitidos.
+- [x] Implementar autorização e revogação por sessão na PWA.
+- [x] Documentar instalação, atualização, remoção, modelo de ameaça e contrato da API em [`agent/README.md`](./agent/README.md).
 
 ### Exemplo de funcionamento
 
@@ -255,7 +257,9 @@ gtk-launch
 Aplicativo Linux
 ```
 
-A comunicação deverá utilizar autenticação, validação de origem e uma lista de operações permitidas.
+O agente escuta somente em `127.0.0.1:4317`. Para uma origem HTTPS hospedada,
+é necessário autorizá-la explicitamente por `ORBE_ALLOWED_ORIGINS` ao iniciar o
+agente. A validação da interface em um desktop Linux real continua pendente.
 
 **Importante:** o agente não será executado na Vercel. Ele funcionará exclusivamente no computador do usuário.
 
@@ -387,15 +391,14 @@ Ainda planejados: configuração explícita da Vercel, módulos de aplicativos e
 
 **Objetivo:** permitir acesso a aplicativos instalados no computador.
 
-- [ ] Desenvolver agente local.
-- [ ] Descobrir arquivos `.desktop`.
-- [ ] Listar aplicativos instalados.
-- [ ] Exibir ícones e categorias.
-- [ ] Abrir aplicativos locais.
-- [ ] Implementar comunicação segura.
-- [ ] Adicionar widget de CPU.
-- [ ] Adicionar widget de RAM.
-- [ ] Adicionar widget de armazenamento.
+- [x] Desenvolver agente local.
+- [x] Descobrir arquivos `.desktop`.
+- [x] Listar aplicativos instalados.
+- [x] Exibir ícones e categorias.
+- [x] Abrir aplicativos locais por ID autorizado.
+- [x] Implementar comunicação segura.
+- [x] Exibir carga média e memória agregada via agente.
+- [ ] Validar a integração em um desktop Linux real.
 
 **Resultado esperado:** Orbe integrado ao ambiente Linux, mantendo a versão web independente.
 

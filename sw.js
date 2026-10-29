@@ -1,4 +1,4 @@
-const CACHE_NAME = "orbe-v6";
+const CACHE_NAME = "orbe-v7";
 const APP_FILES = [
   "./",
   "./index.html",

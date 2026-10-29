@@ -1,6 +1,6 @@
 "use strict";
 import { WidgetManager, clockWidget, systemWidget } from "./widgets.js";
-import { checkLinuxAgent } from "./linux.js";
+import { checkLinuxAgent, initializeLinuxAgent } from "./linux.js";
 import { registerServiceWorker } from "./pwa.js";
 import { loadValue, saveValue } from "./storage.js";
 import { calendarWidget } from "./calendar.js";
@@ -829,6 +829,7 @@ function initialize() {
     once: true,
   });
   checkLinuxAgent();
+  initializeLinuxAgent();
   registerServiceWorker(notify);
   const updatePreferences = () => {
     const nextConfig = configWithChanges((next) => {

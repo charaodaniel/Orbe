@@ -2,7 +2,7 @@
 
 **Objetivo:** levar a base atual do dashboard até uma versão 0.1 estável e, depois, avançar para widgets configuráveis e integração Linux.
 
-**Status:** Fases 1, 2 e 3 implementadas; validação das fases 1 e 2 em navegadores e dispositivos reais continua pendente.
+**Status:** Fases 1 a 4 implementadas; validação das fases 1 a 3 em navegadores e dispositivos reais e validação da integração em desktop Linux continuam pendentes.
 
 ## Base já existente
 
@@ -10,7 +10,7 @@
 - [x] Dashboard responsivo com navegação, dock e cartões de aplicativos.
 - [x] Relógio, calendário mensal, agenda e notas com persistência local.
 - [x] Manifesto, ícones e registro do service worker.
-- [x] Agente local opcional com endpoint de diagnóstico.
+- [x] Agente Linux local opcional com autorização, lista de aplicativos e métricas agregadas.
 - [ ] Validar os fluxos completos em navegador e dispositivos reais.
 
 ## Fase 1: consolidar a versão 0.1
@@ -72,14 +72,15 @@
 
 ## Fase 4: agente Linux seguro
 
-- [ ] Definir o modelo de ameaça e o contrato entre PWA e agente.
-- [ ] Restringir CORS às origens autorizadas e definir autorização antes de expor novas operações.
-- [ ] Documentar instalação, inicialização, atualização e remoção do agente.
-- [ ] Ler e validar arquivos `.desktop` sem aceitar caminhos ou comandos arbitrários.
-- [ ] Listar aplicativos, categorias e ícones disponíveis.
-- [ ] Implementar abertura de aplicativos usando identificadores permitidos.
-- [ ] Implementar consulta de métricas com dados mínimos e permissões explícitas.
-- [ ] Testar agente ausente, indisponível, origem não autorizada e entradas inválidas.
+- [x] Definir o modelo de ameaça e o contrato entre PWA e agente.
+- [x] Restringir CORS às origens autorizadas e exigir token para operações.
+- [x] Documentar instalação, inicialização, atualização e remoção do agente.
+- [x] Ler e validar arquivos `.desktop` sem aceitar caminhos/comandos da PWA.
+- [x] Listar aplicativos, categorias e ícones disponíveis.
+- [x] Implementar abertura de aplicativos usando IDs listados e `gtk-launch`.
+- [x] Implementar consulta autorizada de métricas agregadas mínimas.
+- [x] Automatizar testes de CORS, autorização, entradas inválidas, limite de requisição e rotas protegidas.
+- [ ] Validar agente ausente/indisponível, autorização e abertura de aplicativos em um desktop Linux real.
 
 **Regra de segurança:** não adicionar execução genérica de comandos. Cada operação local deve ser explícita, validada e autorizada.
 
@@ -98,5 +99,5 @@
 1. Concluir a Fase 1 e sincronizar a documentação.
 2. Implementar os widgets essenciais da Fase 2.
 3. Avançar para personalização na Fase 3.
-4. Desenvolver a integração Linux somente após fechar o modelo de segurança da Fase 4.
+4. Validar em desktop Linux a integração implementada na Fase 4.
 5. Executar a revisão de publicação da Fase 5.
